@@ -22,7 +22,7 @@ ENDIF()
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET(CMAKE_SYSTEM_NAME Linux)
-SET(CMAKE_BUILD_TYPE RELEASE)
+SET(CMAKE_BUILD_TYPE DEBUG)
 SET(CMAKE_C_COMPILER "arm-none-eabi-gcc")
 SET(CMAKE_LINKER "arm-none-eabi-ld")
 SET(CMAKE_OBJCOPY "arm-none-eabi-objcopy")
@@ -138,6 +138,7 @@ SET(SRC_DRIVERS
 	${SDK_ROOT}/components/drivers_nrf/gpiote/nrf_drv_gpiote.c
 	${SDK_ROOT}/components/drivers_nrf/timer/nrf_drv_timer.c
 	${SDK_ROOT}/components/drivers_nrf/ppi/nrf_drv_ppi.c
+	${SDK_ROOT}/components/drivers_nrf/uart/nrf_drv_uart.c
 )
 
 SET(SRC_LIBRARIES
@@ -150,6 +151,9 @@ SET(SRC_LIBRARIES
 	${SDK_ROOT}/components/libraries/timer/app_timer.c
 	${SDK_ROOT}/components/libraries/fstorage/fstorage.c
 	${SDK_ROOT}/components/libraries/button/app_button.c
+
+	${SDK_ROOT}/components/libraries/log/src/nrf_log_frontend.c
+	${SDK_ROOT}/components/libraries/log/src/nrf_log_backend_serial.c
 
 	${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
 	${SDK_ROOT}/components/libraries/uart/retarget.c
@@ -174,7 +178,7 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 SET_PROPERTY(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${MAP_SCRIPT} ${MERGE_HEX})
 SET(MCU_FLAGS "-mcpu=cortex-m0 -march=armv6-m -mthumb -mabi=aapcs -mfloat-abi=soft ")
-SET(CMAKE_C_FLAGS "${MCU_FLAGS} -Wall -Werror --std=c99 -MP -MD --short-enums -fno-builtin -fno-strict-aliasing -ffunction-sections -fdata-sections")
+SET(CMAKE_C_FLAGS "${MCU_FLAGS} -Wall --std=c99 -MP -MD --short-enums -fno-builtin -fno-strict-aliasing -ffunction-sections -fdata-sections")
 ADD_DEFINITIONS(-D${FAMILY} -D${DEVICE} -DSOFTDEVICE_PRESENT -DBLE_STACK_SUPPORT_REQD -DSWI_DISABLE0 -DNRF_SD_BLE_API_VERSION=2)
 SET(CMAKE_EXE_LINKER_FLAGS "--specs=nano.specs -lc -lnosys -static -Wl,-Map=${MAP_SCRIPT} -Wl,--gc-section  -L${LINK_COMMON_SCRIPT} -T${LINK_SCRIPT}")
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
@@ -195,7 +199,8 @@ ADD_CUSTOM_COMMAND(DEPENDS ${PROJECT_NAME}.hex OUTPUT ${MERGE_HEX} COMMAND ${MER
 ADD_CUSTOM_TARGET(generate_bin ALL DEPENDS ${PROJECT_NAME}.bin)
 ADD_CUSTOM_TARGET(generate_hex ALL DEPENDS ${PROJECT_NAME}.hex)
 
-ADD_CUSTOM_TARGET(flash ${NRFJPROGBIN} --recover -f NRF51
-	COMMAND ${NRFJPROGBIN} --program ${MERGE_HEX} --verify --chiperase -f NRF51
+ADD_CUSTOM_TARGET(flash ${NRFJPROGBIN} -e  -f NRF51
+	COMMAND ${NRFJPROGBIN} --recover -f NRF51
+	COMMAND ${NRFJPROGBIN} --program ${MERGE_HEX} -c 1000 --verify -f NRF51
 	COMMAND ${NRFJPROGBIN} -r -f NRF51
 	DEPENDS ${MERGE_HEX})
