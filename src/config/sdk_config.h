@@ -144,6 +144,50 @@
 #endif //TIMER_ENABLED
 // </e>
 
+
+
+// <e> CLOCK_ENABLED - nrf_drv_clock - CLOCK peripheral driver
+//==========================================================
+#ifndef CLOCK_ENABLED
+#define CLOCK_ENABLED 1
+#endif
+#if  CLOCK_ENABLED
+// <o> CLOCK_CONFIG_XTAL_FREQ  - HF XTAL Frequency
+ 
+// <0=> Default (64 MHz) 
+// <255=> Default (16 MHz) 
+// <0=> 32 MHz 
+
+#ifndef CLOCK_CONFIG_XTAL_FREQ
+#define CLOCK_CONFIG_XTAL_FREQ 255
+#endif
+
+// <o> CLOCK_CONFIG_LF_SRC  - LF Clock Source
+ 
+// <0=> RC 
+// <1=> XTAL 
+// <2=> Synth 
+
+#ifndef CLOCK_CONFIG_LF_SRC
+#define CLOCK_CONFIG_LF_SRC 1
+#endif
+
+// <o> CLOCK_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+
+// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+
+#ifndef CLOCK_CONFIG_IRQ_PRIORITY
+#define CLOCK_CONFIG_IRQ_PRIORITY 3
+#endif
+
+#endif //CLOCK_ENABLED
+// </e>
+
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver
 //==========================================================
 #ifndef UART_ENABLED
@@ -307,7 +351,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 3
+#define NRF_LOG_DEFAULT_LEVEL 4
 #endif
 
 // <e> NRF_LOG_DEFERRED - Enable deffered logger.

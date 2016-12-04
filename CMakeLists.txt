@@ -31,11 +31,13 @@ SET(CMAKE_SIZE "arm-none-eabi-size")
 SET(FAMILY "NRF51")
 SET(DEVICE "NRF51822")
 SET(SOFTDEVICE "S130")
+SET(RTOS "FREERTOS")
 SET(SOFTDEVICE_HEX ${SDK_ROOT}/components/softdevice/s130/hex/s130_nrf51_2.0.1_softdevice.hex)
 SET(MERGE_HEX merge.hex)
 SET(MAP_SCRIPT nfr51822_xxaa.map)
-SET(LINK_SCRIPT ${SDK_ROOT}/components/softdevice/s130/toolchain/armgcc/armgcc_s130_nrf51822_xxaa.ld)
-SET(LINK_COMMON_SCRIPT ${SDK_ROOT}/components/toolchain/gcc/)
+SET(LINK_SCRIPT ${CMAKE_SOURCE_DIR}/src/script/s130_nrf51822_xxaa.ld)
+#SET(LINK_SCRIPT ${SDK_ROOT}/components/softdevice/s130/toolchain/armgcc/armgcc_s130_nrf51822_xxaa.ld)
+SET(LINK_COMMON_SCRIPT ${SDK_ROOT}/components/toolchain/gcc)
 
 INCLUDE_DIRECTORIES(
 	${SDK_ROOT}/components
@@ -117,6 +119,11 @@ INCLUDE_DIRECTORIES(
 	${SDK_ROOT}/components/libraries/twi
 	${SDK_ROOT}/components/libraries/uart
 	${SDK_ROOT}/components/libraries/util
+	${SDK_ROOT}/external/freertos/source
+	${SDK_ROOT}/external/freertos/source/include/
+	${SDK_ROOT}/external/freertos/portable
+	${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/
+	${SDK_ROOT}/external/freertos/portable/GCC/nrf51/
 	${SDK_ROOT}/components/softdevice/common/softdevice_handler
 	${SDK_ROOT}/components/softdevice/s130/headers
 	${SDK_ROOT}/components/softdevice/s130/headers/nrf51
@@ -124,6 +131,7 @@ INCLUDE_DIRECTORIES(
 	${SDK_ROOT}/components/toolchain/gcc
 	${SDK_ROOT}/components/toolchain/cmsis/include
 	${CMAKE_SOURCE_DIR}/src
+	${CMAKE_SOURCE_DIR}/src/config
 )
 
 SET(SRC_DEVICE
@@ -135,8 +143,12 @@ SET(SRC_DEVICE
 SET(SRC_DRIVERS
 	${SDK_ROOT}/components/drivers_nrf/clock/nrf_drv_clock.c
 	${SDK_ROOT}/components/drivers_nrf/common/nrf_drv_common.c
-	${SDK_ROOT}/components/drivers_nrf/gpiote/nrf_drv_gpiote.c
 	${SDK_ROOT}/components/drivers_nrf/timer/nrf_drv_timer.c
+
+	${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_nvic.c
+	${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_soc.c
+
+	${SDK_ROOT}/components/drivers_nrf/gpiote/nrf_drv_gpiote.c
 	${SDK_ROOT}/components/drivers_nrf/ppi/nrf_drv_ppi.c
 	${SDK_ROOT}/components/drivers_nrf/uart/nrf_drv_uart.c
 )
@@ -155,8 +167,23 @@ SET(SRC_LIBRARIES
 	${SDK_ROOT}/components/libraries/log/src/nrf_log_frontend.c
 	${SDK_ROOT}/components/libraries/log/src/nrf_log_backend_serial.c
 
+	${SDK_ROOT}/components/libraries/timer/app_timer_freertos.c
 	${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
 	${SDK_ROOT}/components/libraries/uart/retarget.c
+)
+
+SET(SRC_RTOS
+	${SDK_ROOT}/external/freertos/source/croutine.c
+	${SDK_ROOT}/external/freertos/source/event_groups.c
+	${SDK_ROOT}/external/freertos/source/portable/MemMang/heap_1.c
+	${SDK_ROOT}/external/freertos/source/list.c
+	${SDK_ROOT}/external/freertos/portable/GCC/nrf51/port.c
+	${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/port_cmsis.c
+	${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/port_cmsis_systick.c
+	${SDK_ROOT}/external/freertos/source/queue.c
+	${SDK_ROOT}/external/freertos/source/tasks.c
+	${SDK_ROOT}/external/freertos/source/timers.c
+
 )
 
 SET(SRC_BLE
@@ -179,7 +206,7 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET_PROPERTY(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${MAP_SCRIPT} ${MERGE_HEX})
 SET(MCU_FLAGS "-mcpu=cortex-m0 -march=armv6-m -mthumb -mabi=aapcs -mfloat-abi=soft ")
 SET(CMAKE_C_FLAGS "${MCU_FLAGS} -Wall --std=c99 -MP -MD --short-enums -fno-builtin -fno-strict-aliasing -ffunction-sections -fdata-sections")
-ADD_DEFINITIONS(-D${FAMILY} -D${DEVICE} -DSOFTDEVICE_PRESENT -DBLE_STACK_SUPPORT_REQD -DSWI_DISABLE0 -DNRF_SD_BLE_API_VERSION=2)
+ADD_DEFINITIONS(-D${FAMILY} -D${DEVICE} -D${SOFTDEVICE} -D${RTOS} -DSOFTDEVICE_PRESENT -DBLE_STACK_SUPPORT_REQD -DSWI_DISABLE0 -DNRF_SD_BLE_API_VERSION=2)
 SET(CMAKE_EXE_LINKER_FLAGS "--specs=nano.specs -lc -lnosys -static -Wl,-Map=${MAP_SCRIPT} -Wl,--gc-section  -L${LINK_COMMON_SCRIPT} -T${LINK_SCRIPT}")
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
@@ -188,7 +215,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
-ADD_EXECUTABLE(${PROJECT_NAME}.elf ${SRC_APP} ${SRC_BLE} ${SRC_DEVICE} ${SRC_DRIVERS} ${SRC_LIBRARIES} ${SRC_BLE_SERVICES})
+ADD_EXECUTABLE(${PROJECT_NAME}.elf ${SRC_APP} ${SRC_BLE} ${SRC_DEVICE} ${SRC_DRIVERS} ${SRC_RTOS} ${SRC_LIBRARIES} ${SRC_BLE_SERVICES})
 
 ADD_CUSTOM_COMMAND(DEPENDS ${PROJECT_NAME}.elf OUTPUT ${PROJECT_NAME}.hex COMMAND ${CMAKE_OBJCOPY} -Oihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex)
 ADD_CUSTOM_COMMAND(DEPENDS ${PROJECT_NAME}.elf OUTPUT ${PROJECT_NAME}.bin COMMAND ${CMAKE_OBJCOPY} -Obinary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin)
@@ -199,8 +226,12 @@ ADD_CUSTOM_COMMAND(DEPENDS ${PROJECT_NAME}.hex OUTPUT ${MERGE_HEX} COMMAND ${MER
 ADD_CUSTOM_TARGET(generate_bin ALL DEPENDS ${PROJECT_NAME}.bin)
 ADD_CUSTOM_TARGET(generate_hex ALL DEPENDS ${PROJECT_NAME}.hex)
 
-ADD_CUSTOM_TARGET(flash ${NRFJPROGBIN} -e  -f NRF51
-	COMMAND ${NRFJPROGBIN} --recover -f NRF51
-	COMMAND ${NRFJPROGBIN} --program ${MERGE_HEX} -c 1000 --verify -f NRF51
+ADD_CUSTOM_TARGET(erase ${NRFJPROGBIN} -e -f NRF51)
+
+ADD_CUSTOM_TARGET(reset ${NRFJPROGBIN} -r -f NRF51)
+
+ADD_CUSTOM_TARGET(flash_softdevice ${NRFJPROGBIN} --program ${SOFTDEVICE_HEX} -f NRF51 --chiperase)
+
+ADD_CUSTOM_TARGET(flash ${NRFJPROGBIN} --program ${PROJECT_NAME}.hex --verify -f NRF51 --sectorerase
 	COMMAND ${NRFJPROGBIN} -r -f NRF51
-	DEPENDS ${MERGE_HEX})
+	DEPENDS ${PROJECT_NAME}.hex)
