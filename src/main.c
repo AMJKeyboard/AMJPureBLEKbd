@@ -31,6 +31,8 @@
 #include "nrf_drv_gpiote.h"
 #include "app_error.h"
 
+#include "matrix.h"
+
 
 #define GPIO_DEBUG_OUTPUT_PIN_NUMBER 2
 #define GPIO_LED_OUTPUT_PIN_NUMBER 3
@@ -41,8 +43,7 @@
 static nrf_drv_timer_t timer = NRF_DRV_TIMER_INSTANCE(0);
 
 
-void timer_dummy_handler(nrf_timer_event_t event_type, void * p_context){
-}
+void timer_dummy_handler(nrf_timer_event_t event_type, void * p_context){}
 
 
 void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
@@ -80,7 +81,8 @@ static void led_blinking_setup()
 }
 
 
-static void button_event_setup(){
+static void button_event_setup()
+{
     ret_code_t err_code;
 
     nrf_drv_gpiote_out_config_t out_config = GPIOTE_CONFIG_OUT_SIMPLE(false);
@@ -102,6 +104,9 @@ int main(void)
 {
     ret_code_t err_code;
 
+    err_code = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(err_code);
+
     err_code = nrf_drv_ppi_init();
     APP_ERROR_CHECK(err_code);
 
@@ -117,17 +122,30 @@ int main(void)
     //Workaround for PAN-73.
     *(uint32_t *)0x40008C0C = 1;
 #endif
+    NRF_LOG_DEBUG("led_blinking_setup.\n");
     led_blinking_setup();
+    NRF_LOG_DEBUG("button_event_setup.\n");
     button_event_setup();
-    err_code = NRF_LOG_INIT(NULL);
-    APP_ERROR_CHECK(err_code);
+
+
+    NRF_LOG_DEBUG("matrix_init.\n");
+    matrix_init();
 
     // Enable timer
-    nrf_drv_timer_enable(&timer);
+    NRF_LOG_DEBUG("enable blink timer.\n");
+    //nrf_drv_timer_enable(&timer);
+    uint16_t col_value = 0;
 
     while (true)
     {
-        NRF_LOG_INFO("main loop.\n");
-        nrf_delay_ms(1000);
+        NRF_LOG_INFO("========================================\r\n")
+        for (uint8_t i=0; i < ROW_COUNT; i++){
+            matrix_select_row(i);
+            col_value = matrix_read_col();
+            matrix_unselect_row(i);
+            NRF_LOG_DEBUG("matrix value: 0x%X \n", col_value);
+        }
+        NRF_LOG_INFO("========================================\r\n")
+        nrf_delay_ms(1500);
     }
 }

@@ -169,7 +169,7 @@ SET(SRC_BLE_SERVICES
 	${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
 )
 
-SET(SRC_APP ${CMAKE_SOURCE_DIR}/src/main.c)
+SET(SRC_APP ${CMAKE_SOURCE_DIR}/src/main.c ${CMAKE_SOURCE_DIR}/src/matrix.c)
 
 SET_PROPERTY(SOURCE ${SDK_ROOT}/components/toolchain/gcc/gcc_startup_nrf51.S PROPERTY LANGUAGE C)
 
