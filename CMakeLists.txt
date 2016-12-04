@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 SET(SDK_ROOT ${CMAKE_SOURCE_DIR}/nRF5_SDK)
 
 IF(NOT EXISTS "${SDK_ROOT}/components" )
-	MESSAGE( FATAL_ERROR "Not found nRF_SDK." )
+    MESSAGE( FATAL_ERROR "Not found nRF_SDK. need nRF5 SDK v12.1.0" )
 ENDIF()
 
 SET(NRF_TOOLS ${CMAKE_SOURCE_DIR}/nRF5_TOOLS)
@@ -144,6 +144,7 @@ SET(SRC_DRIVERS
 	${SDK_ROOT}/components/drivers_nrf/clock/nrf_drv_clock.c
 	${SDK_ROOT}/components/drivers_nrf/common/nrf_drv_common.c
 	${SDK_ROOT}/components/drivers_nrf/timer/nrf_drv_timer.c
+	${SDK_ROOT}/components/drivers_nrf/rtc/nrf_drv_rtc.c
 
 	${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_nvic.c
 	${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_soc.c
@@ -183,7 +184,6 @@ SET(SRC_RTOS
 	${SDK_ROOT}/external/freertos/source/queue.c
 	${SDK_ROOT}/external/freertos/source/tasks.c
 	${SDK_ROOT}/external/freertos/source/timers.c
-
 )
 
 SET(SRC_BLE

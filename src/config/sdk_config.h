@@ -272,6 +272,67 @@
 #endif //UART_ENABLED
 // </e>
 
+// <e> RTC_ENABLED - nrf_drv_rtc - RTC peripheral driver
+//==========================================================
+#ifndef RTC_ENABLED
+#define RTC_ENABLED 1
+#endif
+#if  RTC_ENABLED
+// <o> RTC_DEFAULT_CONFIG_FREQUENCY - Frequency  <16-32768> 
+
+
+#ifndef RTC_DEFAULT_CONFIG_FREQUENCY
+#define RTC_DEFAULT_CONFIG_FREQUENCY 32768
+#endif
+
+// <q> RTC_DEFAULT_CONFIG_RELIABLE  - Ensures safe compare event triggering
+ 
+
+#ifndef RTC_DEFAULT_CONFIG_RELIABLE
+#define RTC_DEFAULT_CONFIG_RELIABLE 0
+#endif
+
+// <o> RTC_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+
+// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+
+#ifndef RTC_DEFAULT_CONFIG_IRQ_PRIORITY
+#define RTC_DEFAULT_CONFIG_IRQ_PRIORITY 3
+#endif
+
+// <q> RTC0_ENABLED  - Enable RTC0 instance
+ 
+
+#ifndef RTC0_ENABLED
+#define RTC0_ENABLED 1
+#endif
+
+// <q> RTC1_ENABLED  - Enable RTC1 instance
+ 
+
+#ifndef RTC1_ENABLED
+#define RTC1_ENABLED 0
+#endif
+
+// <q> RTC2_ENABLED  - Enable RTC2 instance
+ 
+
+#ifndef RTC2_ENABLED
+#define RTC2_ENABLED 0
+#endif
+
+// <o> NRF_MAXIMUM_LATENCY_US - Maximum possible time[us] in highest priority interrupt 
+#ifndef NRF_MAXIMUM_LATENCY_US
+#define NRF_MAXIMUM_LATENCY_US 2000
+#endif
+
+#endif //RTC_ENABLED
+// </e>
 
 // </h> 
 //==========================================================

@@ -25,6 +25,7 @@
 
 #include "nrf.h"
 #include "nordic_common.h"
+#include "nrf_drv_rtc.h"
 #include "nrf_drv_clock.h"
 #include "nrf_gpiote.h"
 #include "nrf_gpio.h"
@@ -40,6 +41,8 @@
 #include "matrix.h"
 
 
+#define COMPARE_COUNTERTIME  (3UL)                                        /**< Get Compare event COMPARE_TIME seconds after the counter starts from 0. */
+
 #define GPIO_DEBUG_OUTPUT_PIN_NUMBER 2
 #define GPIO_LED_OUTPUT_PIN_NUMBER 3
 #define GPIO_BUTTON_INPUT_PIN_NUMBER 8
@@ -48,7 +51,6 @@
 
 #define LED_TOGGLE_TASK_DELAY 200
 
-static nrf_drv_timer_t timer = NRF_DRV_TIMER_INSTANCE(0);
 
 TaskHandle_t  led_toggle_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
 
@@ -92,14 +94,20 @@ static void led_toggle_task_function (void * pvParameter)
     while (true)
     {
 
-        NRF_LOG_INFO("led toggle. \r\n");
+        NRF_LOG_INFO("led toggle while start. \r\n");
         nrf_drv_gpiote_out_toggle(GPIO_LED_OUTPUT_PIN_NUMBER);
         /* Delay a task for a given number of ticks */
-        nrf_delay_ms(100);
+
+        // use this ok.
+        nrf_delay_ms(10);
+
+        // code error!!!!
+        vTaskDelay(10);
+
+        NRF_LOG_INFO("led toggle while end. \r\n");
         /* Tasks must be implemented to never return... */
     }
 }
-
 
 int main(void)
 {
@@ -108,6 +116,7 @@ int main(void)
     /* Initialize clock driver for better time accuracy in FREERTOS */
     err_code = nrf_drv_clock_init();
     APP_ERROR_CHECK(err_code);
+    nrf_drv_clock_lfclk_request(NULL);
 
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
