@@ -20,10 +20,7 @@
 
 int main(void);
 
-void timer_dummy_handler(nrf_timer_event_t event_type, void * p_context);
-
-void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action);
-
-static void led_blinking_setup();
-
-static void button_event_setup();
+static void button_event_setup(void);
+static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action);
+static void led_toggle_task_function (void * pvParameter);
+static void layout_scan_task_function (void * pvParameter);

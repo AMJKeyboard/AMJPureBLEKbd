@@ -49,28 +49,22 @@
 #define GPIO_TX_PIN_NUMBER 23
 #define GPIO_RX_PIN_NUMBER 24
 
-#define LED_TOGGLE_TASK_DELAY 200
+#define LED_TOGGLE_TASK_DELAY 1000
+#define LAYOUT_SCAN_TASK_DELAY 2000
 
 
-TaskHandle_t  led_toggle_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
+TaskHandle_t led_toggle_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
+TaskHandle_t layout_scan_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
 
 
-void timer_dummy_handler(nrf_timer_event_t event_type, void * p_context){}
-
-
-void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     NRF_LOG_INFO("in_pin_handler \r\n");
 }
 
-static void button_event_setup()
+static void button_event_setup(void)
 {
     ret_code_t err_code;
-
-    nrf_drv_gpiote_out_config_t config = GPIOTE_CONFIG_OUT_TASK_TOGGLE(false);
-
-    err_code = nrf_drv_gpiote_out_init(GPIO_LED_OUTPUT_PIN_NUMBER, &config);
-    APP_ERROR_CHECK(err_code);
 
     nrf_drv_gpiote_out_config_t out_config = GPIOTE_CONFIG_OUT_SIMPLE(false);
 
@@ -89,24 +83,38 @@ static void button_event_setup()
 
 static void led_toggle_task_function (void * pvParameter)
 {
-    NRF_LOG_INFO("task led_toggle_task_function. \r\n");
     UNUSED_PARAMETER(pvParameter);
+    ret_code_t err_code;
+    NRF_LOG_INFO("task led_toggle_task_function running. \r\n");
+
+    nrf_drv_gpiote_out_config_t config = GPIOTE_CONFIG_OUT_TASK_TOGGLE(false);
+    err_code = nrf_drv_gpiote_out_init(GPIO_LED_OUTPUT_PIN_NUMBER, &config);
+    APP_ERROR_CHECK(err_code);
+
     while (true)
     {
-
-        NRF_LOG_INFO("led toggle while start. \r\n");
         nrf_drv_gpiote_out_toggle(GPIO_LED_OUTPUT_PIN_NUMBER);
-        /* Delay a task for a given number of ticks */
-
-        // use this ok.
-        nrf_delay_ms(10);
-
-        // code error!!!!
-        vTaskDelay(10);
-
-        NRF_LOG_INFO("led toggle while end. \r\n");
-        /* Tasks must be implemented to never return... */
+        vTaskDelay(LED_TOGGLE_TASK_DELAY);
     }
+}
+
+static void layout_scan_task_function (void * pvParameter){
+    UNUSED_PARAMETER(pvParameter);
+    NRF_LOG_INFO("task layout_scan_task_function running. \r\n");
+    matrix_init();
+
+    uint16_t col_value = 0;
+    while (true)
+    {
+        NRF_LOG_RAW_INFO("=======================================================\r\n");
+        for (uint8_t i=0; i < ROW_COUNT; i++){
+            matrix_select_row(i);
+            col_value = matrix_read_col();
+            matrix_unselect_row(i);
+        }
+        vTaskDelay(LAYOUT_SCAN_TASK_DELAY);
+    }
+
 }
 
 int main(void)
@@ -116,7 +124,6 @@ int main(void)
     /* Initialize clock driver for better time accuracy in FREERTOS */
     err_code = nrf_drv_clock_init();
     APP_ERROR_CHECK(err_code);
-    nrf_drv_clock_lfclk_request(NULL);
 
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
@@ -124,32 +131,23 @@ int main(void)
     err_code = nrf_drv_gpiote_init();
     APP_ERROR_CHECK(err_code);
 
-    NRF_LOG_DEBUG("button_event_setup.\n");
+    NRF_LOG_DEBUG("button_event_setup.\r\n");
     button_event_setup();
 
-    NRF_LOG_DEBUG("matrix_init.\n");
-    matrix_init();
-
-    NRF_LOG_DEBUG("create task led_toggle_task.\n");
+    NRF_LOG_DEBUG("create task list.\r\n");
     /* Create task for LED0 blinking with priority set to 2 */
-    UNUSED_VARIABLE(xTaskCreate(led_toggle_task_function, "LED0", configMINIMAL_STACK_SIZE + 200, NULL, 2, &led_toggle_task_handle));
+    if (pdPASS != xTaskCreate(led_toggle_task_function, "LED0", configMINIMAL_STACK_SIZE + 200 , NULL, 2, &led_toggle_task_handle))
+    {
+        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+    }
+    if (pdPASS != xTaskCreate(layout_scan_task_function, "LAYOUT0", configMINIMAL_STACK_SIZE + 200 , NULL, 2, &layout_scan_task_handle))
+    {
+        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+    }
 
-    NRF_LOG_DEBUG("vTaskStartScheduler.\n");
+    NRF_LOG_DEBUG("vTaskStartScheduler.\r\n");
     /* Start FreeRTOS scheduler. */
     vTaskStartScheduler();
     // bocking..
-
-    uint16_t col_value = 0;
-    while (true)
-    {
-        NRF_LOG_INFO("========================================\r\n")
-        for (uint8_t i=0; i < ROW_COUNT; i++){
-            matrix_select_row(i);
-            col_value = matrix_read_col();
-            matrix_unselect_row(i);
-            NRF_LOG_DEBUG("matrix value: 0x%X \n", col_value);
-        }
-        NRF_LOG_INFO("========================================\r\n")
-        nrf_delay_ms(1500);
-    }
+    NRF_LOG_ERROR("vTaskStartScheduler END.\r\n");
 }
