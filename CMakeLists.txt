@@ -13,11 +13,11 @@ SET(NRFJPROGBIN ${NRF_TOOLS}/nrfjprog/nrfjprog)
 SET(MERGEHEXBIN ${NRF_TOOLS}/mergehex/mergehex)
 
 IF(NOT EXISTS "${NRFJPROGBIN}" )
-	MESSAGE( WARNING "Not found nrfjprog." )
+    MESSAGE( WARNING "Not found nrfjprog." )
 ENDIF()
 
 IF(NOT EXISTS "${MERGEHEXBIN}" )
-	MESSAGE( WARNING "Not found mergehex." )
+    MESSAGE( WARNING "Not found mergehex." )
 ENDIF()
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
@@ -40,160 +40,160 @@ SET(LINK_SCRIPT ${CMAKE_SOURCE_DIR}/src/script/s130_nrf51822_xxaa.ld)
 SET(LINK_COMMON_SCRIPT ${SDK_ROOT}/components/toolchain/gcc)
 
 INCLUDE_DIRECTORIES(
-	${SDK_ROOT}/components
-	${SDK_ROOT}/components/ble/ble_advertising
-	${SDK_ROOT}/components/ble/ble_dtm
-	${SDK_ROOT}/components/ble/ble_racp
-	${SDK_ROOT}/components/ble/ble_services/ble_ancs_c
-	${SDK_ROOT}/components/ble/ble_services/ble_ans_c
-	${SDK_ROOT}/components/ble/ble_services/ble_bas
-	${SDK_ROOT}/components/ble/ble_services/ble_bas_c
-	${SDK_ROOT}/components/ble/ble_services/ble_cscs
-	${SDK_ROOT}/components/ble/ble_services/ble_cts_c
-	${SDK_ROOT}/components/ble/ble_services/ble_dfu
-	${SDK_ROOT}/components/ble/ble_services/ble_dis
-	${SDK_ROOT}/components/ble/ble_services/ble_gls
-	${SDK_ROOT}/components/ble/ble_services/ble_hids
-	${SDK_ROOT}/components/ble/ble_services/ble_hrs
-	${SDK_ROOT}/components/ble/ble_services/ble_hrs_c
-	${SDK_ROOT}/components/ble/ble_services/ble_hts
-	${SDK_ROOT}/components/ble/ble_services/ble_ias
-	${SDK_ROOT}/components/ble/ble_services/ble_ias_c
-	${SDK_ROOT}/components/ble/ble_services/ble_lbs
-	${SDK_ROOT}/components/ble/ble_services/ble_lbs_c
-	${SDK_ROOT}/components/ble/ble_services/ble_lls
-	${SDK_ROOT}/components/ble/ble_services/ble_nus
-	${SDK_ROOT}/components/ble/ble_services/ble_nus_c
-	${SDK_ROOT}/components/ble/ble_services/ble_rscs
-	${SDK_ROOT}/components/ble/ble_services/ble_rscs_c
-	${SDK_ROOT}/components/ble/ble_services/ble_tps
-	${SDK_ROOT}/components/ble/common
-	${SDK_ROOT}/components/ble/nrf_ble_qwr
-	${SDK_ROOT}/components/ble/peer_manager
-	${SDK_ROOT}/components/device
-	${SDK_ROOT}/components/drivers_nrf/adc
-	${SDK_ROOT}/components/drivers_nrf/clock
-	${SDK_ROOT}/components/drivers_nrf/common
-	${SDK_ROOT}/components/drivers_nrf/comp
-	${SDK_ROOT}/components/drivers_nrf/delay
-	${SDK_ROOT}/components/drivers_nrf/gpiote
-	${SDK_ROOT}/components/drivers_nrf/hal
-	${SDK_ROOT}/components/drivers_nrf/i2s
-	${SDK_ROOT}/components/drivers_nrf/lpcomp
-	${SDK_ROOT}/components/drivers_nrf/pdm
-	${SDK_ROOT}/components/drivers_nrf/ppi
-	${SDK_ROOT}/components/drivers_nrf/pwm
-	${SDK_ROOT}/components/drivers_nrf/qdec
-	${SDK_ROOT}/components/drivers_nrf/rng
-	${SDK_ROOT}/components/drivers_nrf/rtc
-	${SDK_ROOT}/components/drivers_nrf/saadc
-	${SDK_ROOT}/components/drivers_nrf/spi_master
-	${SDK_ROOT}/components/drivers_nrf/spi_slave
-	${SDK_ROOT}/components/drivers_nrf/swi
-	${SDK_ROOT}/components/drivers_nrf/timer
-	${SDK_ROOT}/components/drivers_nrf/twi_master
-	${SDK_ROOT}/components/drivers_nrf/twis_slave
-	${SDK_ROOT}/components/drivers_nrf/uart
-	${SDK_ROOT}/components/drivers_nrf/wdt
-	${SDK_ROOT}/components/libraries/button
-	${SDK_ROOT}/components/libraries/crc16
-	${SDK_ROOT}/components/libraries/crc32
-	${SDK_ROOT}/components/libraries/csense
-	${SDK_ROOT}/components/libraries/csense_drv
-	${SDK_ROOT}/components/libraries/experimental_section_vars
-	${SDK_ROOT}/components/libraries/fds
-	${SDK_ROOT}/components/libraries/fifo
-	${SDK_ROOT}/components/libraries/fstorage
-	${SDK_ROOT}/components/libraries/hardfault
-	${SDK_ROOT}/components/libraries/hci
-	${SDK_ROOT}/components/libraries/led_softblink
-	${SDK_ROOT}/components/libraries/log
-	${SDK_ROOT}/components/libraries/log/src
-	${SDK_ROOT}/components/libraries/low_power_pwm
-	${SDK_ROOT}/components/libraries/mailbox
-	${SDK_ROOT}/components/libraries/mem_manager
-	${SDK_ROOT}/components/libraries/pwm
-	${SDK_ROOT}/components/libraries/scheduler
-	${SDK_ROOT}/components/libraries/slip
-	${SDK_ROOT}/components/libraries/timer
-	${SDK_ROOT}/components/libraries/twi
-	${SDK_ROOT}/components/libraries/uart
-	${SDK_ROOT}/components/libraries/util
-	${SDK_ROOT}/external/freertos/source
-	${SDK_ROOT}/external/freertos/source/include/
-	${SDK_ROOT}/external/freertos/portable
-	${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/
-	${SDK_ROOT}/external/freertos/portable/GCC/nrf51/
-	${SDK_ROOT}/components/softdevice/common/softdevice_handler
-	${SDK_ROOT}/components/softdevice/s130/headers
-	${SDK_ROOT}/components/softdevice/s130/headers/nrf51
-	${SDK_ROOT}/components/toolchain
-	${SDK_ROOT}/components/toolchain/gcc
-	${SDK_ROOT}/components/toolchain/cmsis/include
-	${CMAKE_SOURCE_DIR}/src
-	${CMAKE_SOURCE_DIR}/src/config
+    ${SDK_ROOT}/components
+    ${SDK_ROOT}/components/ble/ble_advertising
+    ${SDK_ROOT}/components/ble/ble_dtm
+    ${SDK_ROOT}/components/ble/ble_racp
+    ${SDK_ROOT}/components/ble/ble_services/ble_ancs_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_ans_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_bas
+    ${SDK_ROOT}/components/ble/ble_services/ble_bas_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_cscs
+    ${SDK_ROOT}/components/ble/ble_services/ble_cts_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_dfu
+    ${SDK_ROOT}/components/ble/ble_services/ble_dis
+    ${SDK_ROOT}/components/ble/ble_services/ble_gls
+    ${SDK_ROOT}/components/ble/ble_services/ble_hids
+    ${SDK_ROOT}/components/ble/ble_services/ble_hrs
+    ${SDK_ROOT}/components/ble/ble_services/ble_hrs_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_hts
+    ${SDK_ROOT}/components/ble/ble_services/ble_ias
+    ${SDK_ROOT}/components/ble/ble_services/ble_ias_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_lbs
+    ${SDK_ROOT}/components/ble/ble_services/ble_lbs_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_lls
+    ${SDK_ROOT}/components/ble/ble_services/ble_nus
+    ${SDK_ROOT}/components/ble/ble_services/ble_nus_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_rscs
+    ${SDK_ROOT}/components/ble/ble_services/ble_rscs_c
+    ${SDK_ROOT}/components/ble/ble_services/ble_tps
+    ${SDK_ROOT}/components/ble/common
+    ${SDK_ROOT}/components/ble/nrf_ble_qwr
+    ${SDK_ROOT}/components/ble/peer_manager
+    ${SDK_ROOT}/components/device
+    ${SDK_ROOT}/components/drivers_nrf/adc
+    ${SDK_ROOT}/components/drivers_nrf/clock
+    ${SDK_ROOT}/components/drivers_nrf/common
+    ${SDK_ROOT}/components/drivers_nrf/comp
+    ${SDK_ROOT}/components/drivers_nrf/delay
+    ${SDK_ROOT}/components/drivers_nrf/gpiote
+    ${SDK_ROOT}/components/drivers_nrf/hal
+    ${SDK_ROOT}/components/drivers_nrf/i2s
+    ${SDK_ROOT}/components/drivers_nrf/lpcomp
+    ${SDK_ROOT}/components/drivers_nrf/pdm
+    ${SDK_ROOT}/components/drivers_nrf/ppi
+    ${SDK_ROOT}/components/drivers_nrf/pwm
+    ${SDK_ROOT}/components/drivers_nrf/qdec
+    ${SDK_ROOT}/components/drivers_nrf/rng
+    ${SDK_ROOT}/components/drivers_nrf/rtc
+    ${SDK_ROOT}/components/drivers_nrf/saadc
+    ${SDK_ROOT}/components/drivers_nrf/spi_master
+    ${SDK_ROOT}/components/drivers_nrf/spi_slave
+    ${SDK_ROOT}/components/drivers_nrf/swi
+    ${SDK_ROOT}/components/drivers_nrf/timer
+    ${SDK_ROOT}/components/drivers_nrf/twi_master
+    ${SDK_ROOT}/components/drivers_nrf/twis_slave
+    ${SDK_ROOT}/components/drivers_nrf/uart
+    ${SDK_ROOT}/components/drivers_nrf/wdt
+    ${SDK_ROOT}/components/libraries/button
+    ${SDK_ROOT}/components/libraries/crc16
+    ${SDK_ROOT}/components/libraries/crc32
+    ${SDK_ROOT}/components/libraries/csense
+    ${SDK_ROOT}/components/libraries/csense_drv
+    ${SDK_ROOT}/components/libraries/experimental_section_vars
+    ${SDK_ROOT}/components/libraries/fds
+    ${SDK_ROOT}/components/libraries/fifo
+    ${SDK_ROOT}/components/libraries/fstorage
+    ${SDK_ROOT}/components/libraries/hardfault
+    ${SDK_ROOT}/components/libraries/hci
+    ${SDK_ROOT}/components/libraries/led_softblink
+    ${SDK_ROOT}/components/libraries/log
+    ${SDK_ROOT}/components/libraries/log/src
+    ${SDK_ROOT}/components/libraries/low_power_pwm
+    ${SDK_ROOT}/components/libraries/mailbox
+    ${SDK_ROOT}/components/libraries/mem_manager
+    ${SDK_ROOT}/components/libraries/pwm
+    ${SDK_ROOT}/components/libraries/scheduler
+    ${SDK_ROOT}/components/libraries/slip
+    ${SDK_ROOT}/components/libraries/timer
+    ${SDK_ROOT}/components/libraries/twi
+    ${SDK_ROOT}/components/libraries/uart
+    ${SDK_ROOT}/components/libraries/util
+    ${SDK_ROOT}/external/freertos/source
+    ${SDK_ROOT}/external/freertos/source/include/
+    ${SDK_ROOT}/external/freertos/portable
+    ${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/
+    ${SDK_ROOT}/external/freertos/portable/GCC/nrf51/
+    ${SDK_ROOT}/components/softdevice/common/softdevice_handler
+    ${SDK_ROOT}/components/softdevice/s130/headers
+    ${SDK_ROOT}/components/softdevice/s130/headers/nrf51
+    ${SDK_ROOT}/components/toolchain
+    ${SDK_ROOT}/components/toolchain/gcc
+    ${SDK_ROOT}/components/toolchain/cmsis/include
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/config
 )
 
 SET(SRC_DEVICE
-	${SDK_ROOT}/components/toolchain/gcc/gcc_startup_nrf51.S
-	${SDK_ROOT}/components/toolchain/system_nrf51.c
-	${SDK_ROOT}/components/softdevice/common/softdevice_handler/softdevice_handler.c
+    ${SDK_ROOT}/components/toolchain/gcc/gcc_startup_nrf51.S
+    ${SDK_ROOT}/components/toolchain/system_nrf51.c
+    ${SDK_ROOT}/components/softdevice/common/softdevice_handler/softdevice_handler.c
 )
 
 SET(SRC_DRIVERS
-	${SDK_ROOT}/components/drivers_nrf/clock/nrf_drv_clock.c
-	${SDK_ROOT}/components/drivers_nrf/common/nrf_drv_common.c
-	${SDK_ROOT}/components/drivers_nrf/timer/nrf_drv_timer.c
-	${SDK_ROOT}/components/drivers_nrf/rtc/nrf_drv_rtc.c
+    ${SDK_ROOT}/components/drivers_nrf/clock/nrf_drv_clock.c
+    ${SDK_ROOT}/components/drivers_nrf/common/nrf_drv_common.c
+    ${SDK_ROOT}/components/drivers_nrf/timer/nrf_drv_timer.c
+    ${SDK_ROOT}/components/drivers_nrf/rtc/nrf_drv_rtc.c
 
-	${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_nvic.c
-	${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_soc.c
+    ${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_nvic.c
+    ${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_soc.c
 
-	${SDK_ROOT}/components/drivers_nrf/gpiote/nrf_drv_gpiote.c
-	${SDK_ROOT}/components/drivers_nrf/ppi/nrf_drv_ppi.c
-	${SDK_ROOT}/components/drivers_nrf/uart/nrf_drv_uart.c
+    ${SDK_ROOT}/components/drivers_nrf/gpiote/nrf_drv_gpiote.c
+    ${SDK_ROOT}/components/drivers_nrf/ppi/nrf_drv_ppi.c
+    ${SDK_ROOT}/components/drivers_nrf/uart/nrf_drv_uart.c
 )
 
 SET(SRC_LIBRARIES
-	${SDK_ROOT}/components/libraries/util/nrf_assert.c
-	${SDK_ROOT}/components/libraries/util/app_error.c
-	${SDK_ROOT}/components/libraries/util/app_error_weak.c
-	${SDK_ROOT}/components/libraries/util/app_util_platform.c
+    ${SDK_ROOT}/components/libraries/util/nrf_assert.c
+    ${SDK_ROOT}/components/libraries/util/app_error.c
+    ${SDK_ROOT}/components/libraries/util/app_error_weak.c
+    ${SDK_ROOT}/components/libraries/util/app_util_platform.c
 
-	${SDK_ROOT}/components/libraries/hardfault/hardfault_implementation.c
-	${SDK_ROOT}/components/libraries/timer/app_timer.c
-	${SDK_ROOT}/components/libraries/fstorage/fstorage.c
-	${SDK_ROOT}/components/libraries/button/app_button.c
+    ${SDK_ROOT}/components/libraries/hardfault/hardfault_implementation.c
+    ${SDK_ROOT}/components/libraries/timer/app_timer.c
+    ${SDK_ROOT}/components/libraries/fstorage/fstorage.c
+    ${SDK_ROOT}/components/libraries/button/app_button.c
 
-	${SDK_ROOT}/components/libraries/log/src/nrf_log_frontend.c
-	${SDK_ROOT}/components/libraries/log/src/nrf_log_backend_serial.c
+    ${SDK_ROOT}/components/libraries/log/src/nrf_log_frontend.c
+    ${SDK_ROOT}/components/libraries/log/src/nrf_log_backend_serial.c
 
-	${SDK_ROOT}/components/libraries/timer/app_timer_freertos.c
-	${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
-	${SDK_ROOT}/components/libraries/uart/retarget.c
+    ${SDK_ROOT}/components/libraries/timer/app_timer_freertos.c
+    ${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
+    ${SDK_ROOT}/components/libraries/uart/retarget.c
 )
 
 SET(SRC_RTOS
-	${SDK_ROOT}/external/freertos/source/croutine.c
-	${SDK_ROOT}/external/freertos/source/event_groups.c
-	${SDK_ROOT}/external/freertos/source/portable/MemMang/heap_1.c
-	${SDK_ROOT}/external/freertos/source/list.c
-	${SDK_ROOT}/external/freertos/portable/GCC/nrf51/port.c
-	${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/port_cmsis.c
-	${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/port_cmsis_systick.c
-	${SDK_ROOT}/external/freertos/source/queue.c
-	${SDK_ROOT}/external/freertos/source/tasks.c
-	${SDK_ROOT}/external/freertos/source/timers.c
+    ${SDK_ROOT}/external/freertos/source/croutine.c
+    ${SDK_ROOT}/external/freertos/source/event_groups.c
+    ${SDK_ROOT}/external/freertos/source/portable/MemMang/heap_1.c
+    ${SDK_ROOT}/external/freertos/source/list.c
+    ${SDK_ROOT}/external/freertos/portable/GCC/nrf51/port.c
+    ${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/port_cmsis.c
+    ${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/port_cmsis_systick.c
+    ${SDK_ROOT}/external/freertos/source/queue.c
+    ${SDK_ROOT}/external/freertos/source/tasks.c
+    ${SDK_ROOT}/external/freertos/source/timers.c
 )
 
 SET(SRC_BLE
-	${SDK_ROOT}/components/ble/common/ble_advdata.c
-	${SDK_ROOT}/components/ble/common/ble_conn_params.c
-	${SDK_ROOT}/components/ble/common/ble_srv_common.c
+    ${SDK_ROOT}/components/ble/common/ble_advdata.c
+    ${SDK_ROOT}/components/ble/common/ble_conn_params.c
+    ${SDK_ROOT}/components/ble/common/ble_srv_common.c
 )
 
 SET(SRC_BLE_SERVICES
-	${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
+    ${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
 )
 
 SET(SRC_APP ${CMAKE_SOURCE_DIR}/src/main.c ${CMAKE_SOURCE_DIR}/src/matrix.c)
@@ -233,5 +233,5 @@ ADD_CUSTOM_TARGET(reset ${NRFJPROGBIN} -r -f NRF51)
 ADD_CUSTOM_TARGET(flash_softdevice ${NRFJPROGBIN} --program ${SOFTDEVICE_HEX} -f NRF51 --chiperase)
 
 ADD_CUSTOM_TARGET(flash ${NRFJPROGBIN} --program ${PROJECT_NAME}.hex --verify -f NRF51 --sectorerase
-	COMMAND ${NRFJPROGBIN} -r -f NRF51
-	DEPENDS ${PROJECT_NAME}.hex)
+    COMMAND ${NRFJPROGBIN} -r -f NRF51
+    DEPENDS ${PROJECT_NAME}.hex)
