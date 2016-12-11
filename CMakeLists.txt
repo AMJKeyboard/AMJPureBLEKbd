@@ -31,7 +31,6 @@ SET(CMAKE_SIZE "arm-none-eabi-size")
 SET(FAMILY "NRF51")
 SET(DEVICE "NRF51822")
 SET(SOFTDEVICE "S130")
-SET(RTOS "FREERTOS")
 SET(SOFTDEVICE_HEX ${SDK_ROOT}/components/softdevice/s130/hex/s130_nrf51_2.0.1_softdevice.hex)
 SET(MERGE_HEX merge.hex)
 SET(MAP_SCRIPT nfr51822_xxaa.map)
@@ -119,6 +118,7 @@ INCLUDE_DIRECTORIES(
     ${SDK_ROOT}/components/libraries/twi
     ${SDK_ROOT}/components/libraries/uart
     ${SDK_ROOT}/components/libraries/util
+    ${SDK_ROOT}/components/libraries/sensorsim/
     ${SDK_ROOT}/external/freertos/source
     ${SDK_ROOT}/external/freertos/source/include/
     ${SDK_ROOT}/external/freertos/portable
@@ -138,19 +138,18 @@ SET(SRC_DEVICE
     ${SDK_ROOT}/components/toolchain/gcc/gcc_startup_nrf51.S
     ${SDK_ROOT}/components/toolchain/system_nrf51.c
     ${SDK_ROOT}/components/softdevice/common/softdevice_handler/softdevice_handler.c
+    ${SDK_ROOT}/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.c
 )
 
 SET(SRC_DRIVERS
     ${SDK_ROOT}/components/drivers_nrf/clock/nrf_drv_clock.c
     ${SDK_ROOT}/components/drivers_nrf/common/nrf_drv_common.c
-    ${SDK_ROOT}/components/drivers_nrf/timer/nrf_drv_timer.c
     ${SDK_ROOT}/components/drivers_nrf/rtc/nrf_drv_rtc.c
 
     ${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_nvic.c
     ${SDK_ROOT}/components/drivers_nrf/nrf_soc_nosd/nrf_soc.c
 
     ${SDK_ROOT}/components/drivers_nrf/gpiote/nrf_drv_gpiote.c
-    ${SDK_ROOT}/components/drivers_nrf/ppi/nrf_drv_ppi.c
     ${SDK_ROOT}/components/drivers_nrf/uart/nrf_drv_uart.c
 )
 
@@ -159,41 +158,49 @@ SET(SRC_LIBRARIES
     ${SDK_ROOT}/components/libraries/util/app_error.c
     ${SDK_ROOT}/components/libraries/util/app_error_weak.c
     ${SDK_ROOT}/components/libraries/util/app_util_platform.c
+    ${SDK_ROOT}/components/libraries/timer/app_timer.c
+    ${SDK_ROOT}/components/libraries/timer/app_timer_appsh.c
 
     ${SDK_ROOT}/components/libraries/hardfault/hardfault_implementation.c
-    ${SDK_ROOT}/components/libraries/timer/app_timer.c
+    ${SDK_ROOT}/components/libraries/hardfault/nrf51/handler/hardfault_handler_gcc.c
     ${SDK_ROOT}/components/libraries/fstorage/fstorage.c
-    ${SDK_ROOT}/components/libraries/button/app_button.c
+    ${SDK_ROOT}/components/libraries/sensorsim/sensorsim.c
+    ${SDK_ROOT}/components/libraries/util/sdk_mapped_flags.c
+    ${SDK_ROOT}/components/libraries/fds/fds.c
+    ${SDK_ROOT}/components/libraries/crc16/crc16.c
 
     ${SDK_ROOT}/components/libraries/log/src/nrf_log_frontend.c
     ${SDK_ROOT}/components/libraries/log/src/nrf_log_backend_serial.c
 
-    ${SDK_ROOT}/components/libraries/timer/app_timer_freertos.c
     ${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
+    ${SDK_ROOT}/components/libraries/scheduler/app_scheduler.c
     ${SDK_ROOT}/components/libraries/uart/retarget.c
-)
-
-SET(SRC_RTOS
-    ${SDK_ROOT}/external/freertos/source/croutine.c
-    ${SDK_ROOT}/external/freertos/source/event_groups.c
-    ${SDK_ROOT}/external/freertos/source/portable/MemMang/heap_1.c
-    ${SDK_ROOT}/external/freertos/source/list.c
-    ${SDK_ROOT}/external/freertos/portable/GCC/nrf51/port.c
-    ${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/port_cmsis.c
-    ${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/port_cmsis_systick.c
-    ${SDK_ROOT}/external/freertos/source/queue.c
-    ${SDK_ROOT}/external/freertos/source/tasks.c
-    ${SDK_ROOT}/external/freertos/source/timers.c
 )
 
 SET(SRC_BLE
     ${SDK_ROOT}/components/ble/common/ble_advdata.c
+    ${SDK_ROOT}/components/ble/ble_advertising/ble_advertising.c
     ${SDK_ROOT}/components/ble/common/ble_conn_params.c
     ${SDK_ROOT}/components/ble/common/ble_srv_common.c
+    ${SDK_ROOT}/components/ble/common/ble_conn_state.c
+    ${SDK_ROOT}/components/ble/peer_manager/gatt_cache_manager.c
+    ${SDK_ROOT}/components/ble/peer_manager/gatts_cache_manager.c
+    ${SDK_ROOT}/components/ble/peer_manager/id_manager.c
+    ${SDK_ROOT}/components/ble/peer_manager/peer_data.c
+    ${SDK_ROOT}/components/ble/peer_manager/peer_data_storage.c
+    ${SDK_ROOT}/components/ble/peer_manager/peer_database.c
+    ${SDK_ROOT}/components/ble/peer_manager/peer_id.c
+    ${SDK_ROOT}/components/ble/peer_manager/peer_manager.c
+    ${SDK_ROOT}/components/ble/peer_manager/pm_buffer.c
+    ${SDK_ROOT}/components/ble/peer_manager/pm_mutex.c
+    ${SDK_ROOT}/components/ble/peer_manager/security_dispatcher.c
+    ${SDK_ROOT}/components/ble/peer_manager/security_manager.c
 )
 
 SET(SRC_BLE_SERVICES
-    ${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
+    ${SDK_ROOT}/components/ble/ble_services/ble_bas/ble_bas.c
+    ${SDK_ROOT}/components/ble/ble_services/ble_dis/ble_dis.c
+    ${SDK_ROOT}/components/ble/ble_services/ble_hids/ble_hids.c
 )
 
 SET(SRC_APP ${CMAKE_SOURCE_DIR}/src/main.c ${CMAKE_SOURCE_DIR}/src/matrix.c)
@@ -206,7 +213,7 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET_PROPERTY(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${MAP_SCRIPT} ${MERGE_HEX})
 SET(MCU_FLAGS "-mcpu=cortex-m0 -march=armv6-m -mthumb -mabi=aapcs -mfloat-abi=soft ")
 SET(CMAKE_C_FLAGS "${MCU_FLAGS} -Wall --std=c99 -MP -MD --short-enums -fno-builtin -fno-strict-aliasing -ffunction-sections -fdata-sections")
-ADD_DEFINITIONS(-D${FAMILY} -D${DEVICE} -D${SOFTDEVICE} -D${RTOS} -DSOFTDEVICE_PRESENT -DBLE_STACK_SUPPORT_REQD -DSWI_DISABLE0 -DNRF_SD_BLE_API_VERSION=2)
+ADD_DEFINITIONS(-D${FAMILY} -D${DEVICE} -D${SOFTDEVICE} -D__STACK_SIZE=2048 -D__HEAP_SIZE=1024 -DSOFTDEVICE_PRESENT -DBLE_STACK_SUPPORT_REQD -DSWI_DISABLE0 -DNRF_SD_BLE_API_VERSION=2)
 SET(CMAKE_EXE_LINKER_FLAGS "--specs=nano.specs -lc -lnosys -static -Wl,-Map=${MAP_SCRIPT} -Wl,--gc-section  -L${LINK_COMMON_SCRIPT} -T${LINK_SCRIPT}")
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
@@ -222,7 +229,7 @@ ADD_CUSTOM_COMMAND(DEPENDS ${PROJECT_NAME}.elf OUTPUT ${PROJECT_NAME}.bin COMMAN
 ADD_CUSTOM_COMMAND(TARGET ${PROJECT_NAME}.elf POST_BUILD COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf)
 ADD_CUSTOM_COMMAND(DEPENDS ${PROJECT_NAME}.hex OUTPUT ${MERGE_HEX} COMMAND ${MERGEHEXBIN} -m ${SOFTDEVICE_HEX} ${PROJECT_NAME}.hex -o ${MERGE_HEX})
 
-#ADD_CUSTOM_TAEGET(generate_merge_hex ALL DEPENDS ${MERGE_HEX})
+ADD_CUSTOM_TARGET(generate_merge_hex ALL DEPENDS ${MERGE_HEX})
 ADD_CUSTOM_TARGET(generate_bin ALL DEPENDS ${PROJECT_NAME}.bin)
 ADD_CUSTOM_TARGET(generate_hex ALL DEPENDS ${PROJECT_NAME}.hex)
 
