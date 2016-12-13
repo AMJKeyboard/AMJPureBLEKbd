@@ -27,9 +27,15 @@
 *.i*86
 *.x86_64
 *.hex
+*.bin
+*.map
+*.cmake
 
 # Debug files
 *.dSYM/
 *.su
 
 build
+Makefile
+CMakeCache.txt
+CMakeFiles/
