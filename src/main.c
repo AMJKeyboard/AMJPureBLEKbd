@@ -128,17 +128,6 @@
 #define SCHED_QUEUE_SIZE                 10                                          /**< Maximum number of events in the scheduler queue. */
 #endif
 
-typedef enum
-{
-    BLE_NO_ADV,             /**< No advertising running. */
-    BLE_DIRECTED_ADV,       /**< Direct advertising to the latest central. */
-    BLE_FAST_ADV_WHITELIST, /**< Advertising with whitelist. */
-    BLE_FAST_ADV,           /**< Fast advertising running. */
-    BLE_SLOW_ADV,           /**< Slow advertising running. */
-    BLE_SLEEP,              /**< Go to system-off. */
-} ble_advertising_mode_t;
-
-
 ble_hids_t m_hids;                                   /**< Structure used to identify the HID service. */
 ble_bas_t  m_bas;                                    /**< Structure used to identify the battery service. */
 
@@ -580,7 +569,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
                 {
                     APP_ERROR_CHECK(err_code);
 
-                    ble_gap_addr_t * p_peer_addr = &(peer_bonding_data.peer_id.id_addr_info);
+                    ble_gap_addr_t * p_peer_addr = &(peer_bonding_data.peer_ble_id.id_addr_info);
                     err_code = ble_advertising_peer_addr_reply(p_peer_addr);
                     APP_ERROR_CHECK(err_code);
                 }
