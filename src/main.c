@@ -230,44 +230,32 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
     {
         case PM_EVT_BONDED_PEER_CONNECTED:
         {
-            NRF_LOG_DEBUG("Connected to previously bonded device\r\n");
-            m_peer_id = p_evt->peer_id;
-            err_code  = pm_peer_rank_highest(p_evt->peer_id);
-            if (err_code != NRF_ERROR_BUSY)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
+            NRF_LOG_INFO("Connected to a previously bonded device.\r\n");
         } break;
-
-        case PM_EVT_CONN_SEC_START:
-            break;
 
         case PM_EVT_CONN_SEC_SUCCEEDED:
         {
-            NRF_LOG_DEBUG("Link secured. Role: %d. conn_handle: %d, Procedure: %d\r\n",
-                                 ble_conn_state_role(p_evt->conn_handle),
-                                 p_evt->conn_handle,
-                                 p_evt->params.conn_sec_succeeded.procedure);
+            NRF_LOG_INFO("Connection secured. Role: %d. conn_handle: %d, Procedure: %d\r\n",
+                         ble_conn_state_role(p_evt->conn_handle),
+                         p_evt->conn_handle,
+                         p_evt->params.conn_sec_succeeded.procedure);
+
             m_peer_id = p_evt->peer_id;
-            err_code  = pm_peer_rank_highest(p_evt->peer_id);
-            if (err_code != NRF_ERROR_BUSY)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
+
+            // Note: You should check on what kind of white list policy your application should use.
             if (p_evt->params.conn_sec_succeeded.procedure == PM_LINK_SECURED_PROCEDURE_BONDING)
             {
-                NRF_LOG_DEBUG("New Bond, add the peer to the whitelist if possible\r\n");
-                NRF_LOG_DEBUG("\tm_whitelist_peer_cnt %d, MAX_PEERS_WLIST %d\r\n",
+                NRF_LOG_INFO("New Bond, add the peer to the whitelist if possible\r\n");
+                NRF_LOG_INFO("\tm_whitelist_peer_cnt %d, MAX_PEERS_WLIST %d\r\n",
                                m_whitelist_peer_cnt + 1,
                                BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
+
                 if (m_whitelist_peer_cnt < BLE_GAP_WHITELIST_ADDR_MAX_COUNT)
                 {
-                    //bonded to a new peer, add it to the whitelist.
+                    // Bonded to a new peer, add it to the whitelist.
                     m_whitelist_peers[m_whitelist_peer_cnt++] = m_peer_id;
                     m_is_wl_changed = true;
                 }
-                //Note: This code will use the older bonded device in the white list and not add any newer bonded to it
-                //      You should check on what kind of white list policy your application should use.
             }
         } break;
 
@@ -278,20 +266,6 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
              *  be restarted until the link is disconnected and reconnected. Sometimes it is
              *  impossible, to secure the link, or the peer device does not support it. How to
              *  handle this error is highly application dependent. */
-            switch (p_evt->params.conn_sec_failed.error)
-            {
-                case PM_CONN_SEC_ERROR_PIN_OR_KEY_MISSING:
-                    // Rebond if one party has lost its keys.
-                    err_code = pm_conn_secure(p_evt->conn_handle, true);
-                    if (err_code != NRF_ERROR_INVALID_STATE)
-                    {
-                        APP_ERROR_CHECK(err_code);
-                    }
-                    break; // PM_CONN_SEC_ERROR_PIN_OR_KEY_MISSING
-
-                default:
-                    break;
-            }
         } break;
 
         case PM_EVT_CONN_SEC_CONFIG_REQ:
@@ -320,21 +294,16 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
             APP_ERROR_CHECK(p_evt->params.error_unexpected.error);
             break;
 
-        case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
-            break;
-
         case PM_EVT_PEER_DATA_UPDATE_FAILED:
             // Assert.
-            APP_ERROR_CHECK_BOOL(false);
-            break;
-
-        case PM_EVT_PEER_DELETE_SUCCEEDED:
+            APP_ERROR_CHECK(p_evt->params.peer_data_update_failed.error);
             break;
 
         case PM_EVT_PEER_DELETE_FAILED:
+        {
             // Assert.
             APP_ERROR_CHECK(p_evt->params.peer_delete_failed.error);
-            break;
+        } break;
 
         case PM_EVT_PEERS_DELETE_SUCCEEDED:
             advertising_start();
@@ -345,6 +314,9 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
             APP_ERROR_CHECK(p_evt->params.peers_delete_failed_evt.error);
             break;
 
+        case PM_EVT_CONN_SEC_START:
+        case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
+        case PM_EVT_PEER_DELETE_SUCCEEDED:
         case PM_EVT_LOCAL_DB_CACHE_APPLIED:
             break;
 
