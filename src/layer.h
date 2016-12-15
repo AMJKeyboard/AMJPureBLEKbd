@@ -16,7 +16,7 @@
  * =====================================================================================
  */
 
-void layers_init(void);
-void layers_process(void);
+void layer_init(void);
+void layer_process_timeout_handler(void * p_context);
 static void layer_read(void);
-static void layers_diff(void);
+static void layer_diff(void);

@@ -61,7 +61,7 @@
 #include "timers.h"
 #include "battery_service.h"
 #include "hids_service.h"
-#include "layers.h"
+#include "layer.h"
 
 
 #define GPIO_DEBUG_OUTPUT_PIN_NUMBER 2
@@ -910,9 +910,11 @@ int main(void)
     NRF_LOG_DEBUG("button_event_setup.\r\n");
 
     button_event_setup();
-    layers_init();
     debug_led_init();
-    bas_timer_init();
+
+    layer_init();
+    timer_init();
+
     ble_stack_init();
     scheduler_init();
     peer_manager_init(true);
@@ -924,6 +926,7 @@ int main(void)
 
     // Start execution.
     NRF_LOG_INFO("HID Keyboard Start!\r\n");
+    layer_timer_start();
     bas_timer_start();
     advertising_start();
 

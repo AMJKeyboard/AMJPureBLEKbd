@@ -19,14 +19,17 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "nordic_common.h"
+
 #include "keyboard_config.h"
 #include "matrix.h"
 
-static uint16_t layer_prev[MATRIX_ROWS] = {0};
-static uint16_t layer_current[MATRIX_ROWS] = {0};
-static uint16_t layer_ghost[MATRIX_ROWS] = {0};
+static uint8_t layer_prev[MATRIX_ROWS][MATRIX_COLS] = {0};
+static uint8_t layer_current[MATRIX_ROWS][MATRIX_COLS] = {0};
+static uint8_t layer_ghost[MATRIX_ROWS][MATRIX_COLS] = {0};
 
 static void layer_read(void){
+
     for (uint8_t i=0; i < MATRIX_ROWS; i++){
         matrix_select_row(i);
         layer_current[i] = matrix_read_col();
@@ -34,15 +37,15 @@ static void layer_read(void){
     }
 }
 
-static void layers_diff(void){
-
-}
-
-
-void layers_process(void){
+void layer_process_timeout_handler(void * p_context){
+    UNUSED_PARAMETER(p_context);
     layer_read();
 }
 
-void layers_init(void){
+static void layer_diff(void){
+
+}
+
+void layer_init(void){
     matrix_init();
 }

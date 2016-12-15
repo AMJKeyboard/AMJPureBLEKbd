@@ -23,17 +23,20 @@
 
 #include "timers.h"
 #include "battery_service.h"
+#include "layer.h"
 
 
 #define BATTERY_LEVEL_MEAS_INTERVAL      APP_TIMER_TICKS(2000, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
+#define LAYER_PROCESS_INTERVAL      APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
 
 APP_TIMER_DEF(m_battery_timer_id);                          /**< Battery timer. */
+APP_TIMER_DEF(m_layout_timer_id);                          /**< Battery timer. */
 
 /**@brief Function for the Timer initialization.
  *
  * @details Initializes the timer module.
  */
-void bas_timer_init(void)
+void timer_init(void)
 {
     uint32_t err_code;
 
@@ -45,7 +48,13 @@ void bas_timer_init(void)
                                 APP_TIMER_MODE_REPEATED,
                                 battery_level_meas_timeout_handler);
     APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_create(&m_layout_timer_id,
+                                APP_TIMER_MODE_REPEATED,
+                                layer_process_timeout_handler);
+    APP_ERROR_CHECK(err_code);
 }
+
 
 /**@brief Function for starting timers.
  */
@@ -54,5 +63,12 @@ void bas_timer_start(void)
     uint32_t err_code;
 
     err_code = app_timer_start(m_battery_timer_id, BATTERY_LEVEL_MEAS_INTERVAL, NULL);
+    APP_ERROR_CHECK(err_code);
+}
+
+void layer_timer_start(void)
+{
+    uint32_t err_code;
+    err_code = app_timer_start(m_layout_timer_id, LAYER_PROCESS_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
 }
