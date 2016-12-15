@@ -18,9 +18,6 @@
 
 #pragma once
 
-#define ROW_COUNT 4
-#define COL_COUNT 12
-
 #define ROW_PIN_0 4
 #define ROW_PIN_1 5
 #define ROW_PIN_2 6

@@ -25,14 +25,15 @@
 #include "nrf_log.h"
 #include "nrf_delay.h"
 
+#include "keyboard_config.h"
 #include "matrix.h"
 
-static uint32_t rows[ROW_COUNT] = {ROW_PIN_0, ROW_PIN_1, ROW_PIN_2, ROW_PIN_3};
+static uint32_t rows[MATRIX_ROWS] = {ROW_PIN_0, ROW_PIN_1, ROW_PIN_2, ROW_PIN_3};
 
 void matrix_init(void)
 {
     // row output and hight
-    for (uint8_t i = 0; i<ROW_COUNT; i++ ){
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++ ){
         nrf_gpio_cfg_output(rows[i]);
         nrf_gpio_pin_write(rows[i], true);
     }

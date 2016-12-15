@@ -56,9 +56,12 @@
 #include "fds.h"
 #include "peer_manager.h"
 
+#include "keyboard_config.h"
 #include "main.h"
+#include "timers.h"
 #include "battery_service.h"
 #include "hids_service.h"
+#include "layers.h"
 
 
 #define GPIO_DEBUG_OUTPUT_PIN_NUMBER 2
@@ -78,16 +81,30 @@
 #define UART_RX_BUF_SIZE                 1                                          /**< UART RX buffer size. */
 
 
-#define DEVICE_NAME                      "AMJ_Keyboard"                          /**< Name of device. Will be included in the advertising data. */
-#define MANUFACTURER_NAME                "AMJ BLE"                      /**< Manufacturer. Will be passed to Device Information Service. */
+#ifndef DEVICE_NAME
+#define DEVICE_NAME                      "Keyboard"                          /**< Name of device. Will be included in the advertising data. */
+#endif
 
-#define APP_TIMER_PRESCALER              0                                          /**< Value of the RTC1 PRESCALER register. */
+#ifndef MANUFACTURER_NAME
+#define MANUFACTURER_NAME                "AMJ"                      /**< Manufacturer. Will be passed to Device Information Service. */
+#endif
 
 
+#ifndef PNP_ID_VENDOR_ID_SOURCE
 #define PNP_ID_VENDOR_ID_SOURCE          0x02                                       /**< Vendor ID Source. */
+#endif
+
+#ifndef PNP_ID_VENDOR_ID
 #define PNP_ID_VENDOR_ID                 0x1915                                     /**< Vendor ID. */
+#endif
+
+#ifndef PNP_ID_PRODUCT_ID
 #define PNP_ID_PRODUCT_ID                0xEEEE                                     /**< Product ID. */
+#endif
+
+#ifndef PNP_ID_PRODUCT_VERSION
 #define PNP_ID_PRODUCT_VERSION           0x0001                                     /**< Product Version. */
+#endif
 
 #define APP_ADV_FAST_INTERVAL            0x0028                                     /**< Fast advertising interval (in units of 0.625 ms. This value corresponds to 25 ms.). */
 #define APP_ADV_SLOW_INTERVAL            0x0C80                                     /**< Slow advertising interval (in units of 0.625 ms. This value corrsponds to 2 seconds). */
@@ -893,9 +910,9 @@ int main(void)
     NRF_LOG_DEBUG("button_event_setup.\r\n");
 
     button_event_setup();
-    matrix_init();
+    layers_init();
     debug_led_init();
-    bas_timers_init();
+    bas_timer_init();
     ble_stack_init();
     scheduler_init();
     peer_manager_init(true);
@@ -907,7 +924,7 @@ int main(void)
 
     // Start execution.
     NRF_LOG_INFO("HID Keyboard Start!\r\n");
-    bas_timers_start();
+    bas_timer_start();
     advertising_start();
 
     // Enter main loop.

@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  battery_service.h
+ *       Filename:  layers.h
  *
  *    Description:  
  *
  *        Version:  1.0
- *        Created:  12/12/2016 09:02:22 PM
+ *        Created:  12/15/2016 12:28:54 PM
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,6 +16,7 @@
  * =====================================================================================
  */
 
-void bas_init(void);
-void battery_level_update(void);
-void battery_level_meas_timeout_handler(void * p_context);
+void layers_init(void);
+void layers_process(void);
+static void layer_read(void);
+static void layers_diff(void);

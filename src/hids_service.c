@@ -590,15 +590,6 @@ void on_hid_rep_char_write(ble_hids_evt_t * p_evt)
     }
 }
 
-void key_scan_task(void){
-    for (uint8_t i=0; i < ROW_COUNT; i++){
-        matrix_select_row(i);
-        matrix_read_col();
-        matrix_unselect_row(i);
-    }
-
-}
-
 /**@brief Function for handling Service errors.
  *
  * @details A pointer to this function will be passed to each service which may need to inform the
