@@ -866,7 +866,9 @@ static void power_manage(void)
 
 static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
-    NRF_LOG_INFO("in_pin_handler \r\n");
+    NRF_LOG_DEBUG("Soft System Reset !! \r\n");
+    nrf_delay_us(100);
+    sd_nvic_SystemReset();
 }
 
 static void button_event_setup(void)
