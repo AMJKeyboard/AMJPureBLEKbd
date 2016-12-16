@@ -30,6 +30,11 @@
 
 static uint32_t rows[MATRIX_ROWS] = {ROW_PIN_0, ROW_PIN_1, ROW_PIN_2, ROW_PIN_3};
 
+#ifndef MATRIX_DEBUG(...)
+#define MATRIX_DEBUG(...)  NRF_LOG_RAW_INFO(__VA_ARGS__)
+#endif
+
+
 void matrix_init(void)
 {
     // row output and hight
@@ -54,14 +59,14 @@ void matrix_init(void)
 
 void matrix_select_row(uint8_t row)
 {
-    NRF_LOG_RAW_INFO("(ROW %d )", row);
+    MATRIX_DEBUG("(ROW %d )", row);
     nrf_gpio_pin_write(rows[row], 0);
 }
 
 void matrix_unselect_row(uint8_t row)
 {
     nrf_gpio_pin_write(rows[row], 1);
-    NRF_LOG_RAW_INFO("\r\n");
+    MATRIX_DEBUG("\r\n");
 }
 
 uint16_t matrix_read_col(void)
@@ -74,22 +79,22 @@ uint16_t matrix_read_col(void)
     for (uint8_t i=0; i < 8; i++) {
         nrf_gpio_pin_write(COL_IC_CP_PIN, true);
         nrf_delay_us(2);
-        NRF_LOG_RAW_INFO("[");
+        MATRIX_DEBUG("[");
         if( ! nrf_gpio_pin_read(COL_IC_DIN_PIN_0)){
             col_value += 1<<i;
-            NRF_LOG_RAW_INFO("X] ");
+            MATRIX_DEBUG("X] ");
         }
         else{
-            NRF_LOG_RAW_INFO("O] ");
+            MATRIX_DEBUG("O] ");
         }
         if ( i < 4) {
-            NRF_LOG_RAW_INFO("<");
+            MATRIX_DEBUG("<");
             if( ! nrf_gpio_pin_read(COL_IC_DIN_PIN_1)){
-                NRF_LOG_RAW_INFO("X> ");
+                MATRIX_DEBUG("X> ");
                 col_value += 1<<(i + 8);
             }
             else{
-                NRF_LOG_RAW_INFO("O> ");
+                MATRIX_DEBUG("O> ");
             }
         }
         nrf_gpio_pin_write(COL_IC_CP_PIN, false);

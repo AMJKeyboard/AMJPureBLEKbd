@@ -20,32 +20,60 @@
 #include <stdint.h>
 
 #include "nordic_common.h"
+#include "nrf_log.h"
 
 #include "keyboard_config.h"
 #include "matrix.h"
 
-static uint8_t layer_prev[MATRIX_ROWS][MATRIX_COLS] = {0};
-static uint8_t layer_current[MATRIX_ROWS][MATRIX_COLS] = {0};
-static uint8_t layer_ghost[MATRIX_ROWS][MATRIX_COLS] = {0};
+typedef struct key_info {
+    uint8_t col;
+    uint8_t row;
+    uint8_t stat;
+} key_info_t;
+
+static bool layer_prev[MATRIX_ROWS][MATRIX_COLS] = {0};
+static bool layer_current[MATRIX_ROWS][MATRIX_COLS] = {0};
 
 static void layer_read(void){
-
-    for (uint8_t i=0; i < MATRIX_ROWS; i++){
+    uint32_t cols_value = -1;
+    for (uint8_t i=0; i < MATRIX_ROWS; i++)
+    {
         matrix_select_row(i);
-        layer_current[i] = matrix_read_col();
+        cols_value = matrix_read_col();
+        for (uint8_t j=0; j < MATRIX_COLS; j++)
+        {
+            layer_current[i][j] = (cols_value & 1<<j) ? 1 : 0;
+        }
         matrix_unselect_row(i);
     }
+}
+
+
+static void layer_diff(void){
+    for (uint8_t i=0; i < MATRIX_ROWS; i++)
+    {
+        for (uint8_t j=0; j < MATRIX_COLS; j++)
+        {
+
+            if (layer_current[i][j] != layer_prev[i][j])
+            {
+                key_info_t key_ev;
+                key_ev.row = i;
+                key_ev.col = j;
+                key_ev.stat = layer_current[i][j];
+                NRF_LOG_DEBUG("Layer diff: Row[%d] Col[%d] Value[%d] \r\n", key_ev.row, key_ev.col, key_ev.stat);
+            }
+        }
+    }
+}
+
+void layer_init(void){
+    matrix_init();
 }
 
 void layer_process_timeout_handler(void * p_context){
     UNUSED_PARAMETER(p_context);
     layer_read();
-}
-
-static void layer_diff(void){
-
-}
-
-void layer_init(void){
-    matrix_init();
+    layer_diff();
+    memcpy(layer_prev, layer_current, sizeof(layer_prev));
 }
