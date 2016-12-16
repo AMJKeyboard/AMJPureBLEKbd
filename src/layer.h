@@ -16,7 +16,15 @@
  * =====================================================================================
  */
 
+typedef struct key_info {
+    uint8_t col;
+    uint8_t row;
+    uint8_t stat;
+} key_info_t;
+
 void layer_init(void);
 void layer_process_timeout_handler(void * p_context);
+bool layer_key_check(key_info_t * key_ev);
+static bool layer_key_info_match(key_info_t * key_ev);
 static void layer_read(void);
 static void layer_diff(void);

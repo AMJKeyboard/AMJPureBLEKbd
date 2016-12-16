@@ -24,12 +24,8 @@
 
 #include "keyboard_config.h"
 #include "matrix.h"
+#include "layer.h"
 
-typedef struct key_info {
-    uint8_t col;
-    uint8_t row;
-    uint8_t stat;
-} key_info_t;
 
 static bool layer_prev[MATRIX_ROWS][MATRIX_COLS] = {0};
 static bool layer_current[MATRIX_ROWS][MATRIX_COLS] = {0};
@@ -47,6 +43,16 @@ static void layer_read(void){
         matrix_unselect_row(i);
     }
 }
+bool layer_key_check(key_info_t *key_ev){
+    layer_read();
+    return layer_key_info_match(key_ev);
+}
+
+
+static bool layer_key_info_match(key_info_t *key_ev){
+    return layer_current[key_ev->row][key_ev->col] == key_ev->stat;
+}
+
 
 
 static void layer_diff(void){

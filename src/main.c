@@ -894,12 +894,14 @@ static void debug_led_init(void)
     nrf_drv_gpiote_out_config_t config = GPIOTE_CONFIG_OUT_TASK_TOGGLE(false);
     err_code = nrf_drv_gpiote_out_init(GPIO_LED_OUTPUT_PIN_NUMBER, &config);
     APP_ERROR_CHECK(err_code);
+    nrf_drv_gpiote_out_set(GPIO_LED_OUTPUT_PIN_NUMBER);
 }
 
 
 int main(void)
 {
     ret_code_t err_code;
+    bool erase_bonds = false;
 
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
@@ -910,14 +912,24 @@ int main(void)
     NRF_LOG_DEBUG("button_event_setup.\r\n");
 
     button_event_setup();
-    debug_led_init();
-
     layer_init();
+    debug_led_init();
     timer_init();
+
+    key_info_t key_ev;
+    key_ev.row = 0;
+    key_ev.col = 3;
+    key_ev.stat = 1;
+
+    if (layer_key_check(&key_ev))
+    {
+        NRF_LOG_DEBUG("press key, BLE erase bonds! \r\n");
+        erase_bonds = true;
+    }
 
     ble_stack_init();
     scheduler_init();
-    peer_manager_init(true);
+    peer_manager_init(erase_bonds);
     gap_params_init();
     advertising_init();
     services_init();
