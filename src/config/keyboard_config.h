@@ -26,4 +26,5 @@
 #define MATRIX_ROWS 4
 #define MATRIX_COLS 12
 
-#define MATRIX_DEBUG(...)
+//#define MATRIX_DEBUG(...)
+//#ifndef KEYCODE_DEBUG(...)

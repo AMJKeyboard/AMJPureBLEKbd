@@ -66,7 +66,8 @@ void bas_init(void)
 void bas_adc_init(void)
 {
 
-    static nrf_adc_config_t adc_config = NRF_ADC_CONFIG_DEFAULT;
+    nrf_adc_config_t adc_config = NRF_ADC_CONFIG_DEFAULT;
+    adc_config.resolution = NRF_ADC_CONFIG_RES_8BIT;
     nrf_adc_configure(&adc_config);
 }
 
@@ -78,11 +79,9 @@ void battery_level_update(void)
     uint8_t  battery_level;
     uint16_t adc_value = -1;
     nrf_adc_enable();
-    NRF_LOG_DEBUG("battery_level_update \r\n");
     adc_value = nrf_adc_convert_single (BATTERY_ADC_INPUT_PIN);
-    NRF_LOG_DEBUG("battery adc value: %d \r\n", adc_value);
     nrf_adc_disable();
-    battery_level = (uint8_t)10;
+    battery_level = (uint8_t)adc_value;
     err_code = ble_bas_battery_level_update(&m_bas, battery_level);
     if ((err_code != NRF_SUCCESS) &&
         (err_code != NRF_ERROR_INVALID_STATE) &&

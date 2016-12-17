@@ -25,6 +25,7 @@
 #include "keyboard_config.h"
 #include "matrix.h"
 #include "layer.h"
+#include "actions.h"
 
 
 static bool layer_prev[MATRIX_ROWS][MATRIX_COLS] = {0};
@@ -68,6 +69,7 @@ static void layer_diff(void){
                 key_ev.col = j;
                 key_ev.stat = layer_current[i][j];
                 NRF_LOG_DEBUG("Layer diff: Row[%d] Col[%d] Value[%d] \r\n", key_ev.row, key_ev.col, key_ev.stat);
+                action_key_event(&key_ev);
             }
         }
     }
