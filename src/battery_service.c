@@ -16,6 +16,12 @@
  * =====================================================================================
  */
 
+#include <stdint.h>
+#include "nordic_common.h"
+#include "nrf_delay.h"
+#include "nrf_adc.h"
+#include "nrf_log.h"
+
 #include "ble.h"
 #include "ble_hci.h"
 #include "ble_srv_common.h"
@@ -27,6 +33,9 @@
 #include "app_error.h"
 #include "battery_service.h"
 
+#ifndef BATTERY_ADC_INPUT_PIN
+#define BATTERY_ADC_INPUT_PIN NRF_ADC_CONFIG_INPUT_2
+#endif
 
 extern ble_bas_t  m_bas;
 
@@ -54,15 +63,26 @@ void bas_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
+void bas_adc_init(void)
+{
+
+    static nrf_adc_config_t adc_config = NRF_ADC_CONFIG_DEFAULT;
+    nrf_adc_configure(&adc_config);
+}
+
 /**@brief Function for performing a battery measurement, and update the Battery Level characteristic in the Battery Service.
  */
 void battery_level_update(void)
 {
     uint32_t err_code;
     uint8_t  battery_level;
-
-    battery_level = (uint8_t)12;
-
+    uint16_t adc_value = -1;
+    nrf_adc_enable();
+    NRF_LOG_DEBUG("battery_level_update \r\n");
+    adc_value = nrf_adc_convert_single (BATTERY_ADC_INPUT_PIN);
+    NRF_LOG_DEBUG("battery adc value: %d \r\n", adc_value);
+    nrf_adc_disable();
+    battery_level = (uint8_t)10;
     err_code = ble_bas_battery_level_update(&m_bas, battery_level);
     if ((err_code != NRF_SUCCESS) &&
         (err_code != NRF_ERROR_INVALID_STATE) &&

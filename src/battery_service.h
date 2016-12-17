@@ -17,5 +17,6 @@
  */
 
 void bas_init(void);
+void bas_adc_init(void);
 void battery_level_update(void);
 void battery_level_meas_timeout_handler(void * p_context);

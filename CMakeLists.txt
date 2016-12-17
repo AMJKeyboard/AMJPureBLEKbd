@@ -165,6 +165,7 @@ SET(SRC_LIBRARIES
     ${SDK_ROOT}/components/libraries/hardfault/nrf51/handler/hardfault_handler_gcc.c
     ${SDK_ROOT}/components/libraries/fstorage/fstorage.c
     ${SDK_ROOT}/components/libraries/sensorsim/sensorsim.c
+    ${SDK_ROOT}/components/drivers_nrf/hal/nrf_adc.c
     ${SDK_ROOT}/components/libraries/util/sdk_mapped_flags.c
     ${SDK_ROOT}/components/libraries/fds/fds.c
     ${SDK_ROOT}/components/libraries/crc16/crc16.c
