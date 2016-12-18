@@ -582,14 +582,10 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
         case BLE_EVT_TX_COMPLETE:
             // Send next key event
-            (void) buffer_dequeue(true);
             break; // BLE_EVT_TX_COMPLETE
 
         case BLE_GAP_EVT_DISCONNECTED:
             NRF_LOG_INFO("Disconnected\r\n");
-            // Dequeue all keys without transmission.
-            (void) buffer_dequeue(false);
-
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
 
             // disabling alert 3. signal - used for capslock ON
@@ -931,7 +927,6 @@ int main(void)
     advertising_init();
     services_init();
     conn_params_init();
-    buffer_init();
 
     // Start execution.
     NRF_LOG_INFO("HID Keyboard Start!\r\n");
