@@ -19,7 +19,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "nrf.h"
 #include "nordic_common.h"
+#include "nrf_gpiote.h"
+#include "nrf_gpio.h"
+
 #include "nrf_log.h"
 
 #include "keyboard_config.h"
@@ -32,6 +36,7 @@ static bool layer_prev[MATRIX_ROWS][MATRIX_COLS] = {0};
 static bool layer_current[MATRIX_ROWS][MATRIX_COLS] = {0};
 
 static void layer_read(void){
+    nrf_drv_gpiote_out_clear(GPIO_LED_OUTPUT_PIN_NUMBER);
     uint32_t cols_value = -1;
     for (uint8_t i=0; i < MATRIX_ROWS; i++)
     {
@@ -43,6 +48,7 @@ static void layer_read(void){
         }
         matrix_unselect_row(i);
     }
+    nrf_drv_gpiote_out_set(GPIO_LED_OUTPUT_PIN_NUMBER);
 }
 bool layer_key_check(key_info_t *key_ev){
     layer_read();
@@ -68,7 +74,6 @@ static void layer_diff(void){
                 key_ev.row = i;
                 key_ev.col = j;
                 key_ev.stat = layer_current[i][j];
-                NRF_LOG_DEBUG("Layer diff: Row[%d] Col[%d] Value[%d] \r\n", key_ev.row, key_ev.col, key_ev.stat);
                 action_key_event(&key_ev);
             }
         }
@@ -84,4 +89,9 @@ void layer_process_timeout_handler(void * p_context){
     layer_read();
     layer_diff();
     memcpy(layer_prev, layer_current, sizeof(layer_prev));
+
+#ifdef HID_REPORT_DEBUG
+    kb_report_debug();
+#endif
+
 }

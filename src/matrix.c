@@ -30,8 +30,10 @@
 
 static uint32_t rows[MATRIX_ROWS] = {ROW_PIN_0, ROW_PIN_1, ROW_PIN_2, ROW_PIN_3};
 
-#ifndef MATRIX_DEBUG(...)
-#define MATRIX_DEBUG(...)  NRF_LOG_RAW_INFO(__VA_ARGS__)
+#ifdef MATRIX_DEBUG
+#define MATRIX_DEBUG_LOG(...)  NRF_LOG_RAW_INFO(__VA_ARGS__)
+#else
+#define MATRIX_DEBUG_LOG(...)
 #endif
 
 
@@ -59,14 +61,14 @@ void matrix_init(void)
 
 void matrix_select_row(uint8_t row)
 {
-    MATRIX_DEBUG("(ROW %d )", row);
+    MATRIX_DEBUG_LOG("(ROW %d )", row);
     nrf_gpio_pin_write(rows[row], 0);
 }
 
 void matrix_unselect_row(uint8_t row)
 {
     nrf_gpio_pin_write(rows[row], 1);
-    MATRIX_DEBUG("\r\n");
+    MATRIX_DEBUG_LOG("\r\n");
 }
 
 uint16_t matrix_read_col(void)
@@ -79,22 +81,22 @@ uint16_t matrix_read_col(void)
     for (uint8_t i=0; i < 8; i++) {
         nrf_gpio_pin_write(COL_IC_CP_PIN, true);
         nrf_delay_us(2);
-        MATRIX_DEBUG("[");
+        MATRIX_DEBUG_LOG("[");
         if( ! nrf_gpio_pin_read(COL_IC_DIN_PIN_0)){
             col_value += 1<<i;
-            MATRIX_DEBUG("X] ");
+            MATRIX_DEBUG_LOG("X] ");
         }
         else{
-            MATRIX_DEBUG("O] ");
+            MATRIX_DEBUG_LOG("O] ");
         }
         if ( i < 4) {
-            MATRIX_DEBUG("<");
+            MATRIX_DEBUG_LOG("<");
             if( ! nrf_gpio_pin_read(COL_IC_DIN_PIN_1)){
-                MATRIX_DEBUG("X> ");
+                MATRIX_DEBUG_LOG("X> ");
                 col_value += 1<<(i + 8);
             }
             else{
-                MATRIX_DEBUG("O> ");
+                MATRIX_DEBUG_LOG("O> ");
             }
         }
         nrf_gpio_pin_write(COL_IC_CP_PIN, false);

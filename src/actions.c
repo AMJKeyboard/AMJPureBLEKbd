@@ -28,23 +28,114 @@
 #include "layer.h"
 #include "actions.h"
 
-#ifndef KEYCODE_DEBUG(...)
-#define KEYCODE_DEBUG(...)  NRF_LOG_DEBUG(__VA_ARGS__)
+#ifdef KEYCODE_DEBUG
+#define KEYCODE_DEBUG_LOG(...)  NRF_LOG_DEBUG(__VA_ARGS__)
+#else
+#define KEYCODE_DEBUG_LOG(...)
+#endif
+
+static kb_report_data_t kb_data = {0};
+
+void kb_report_init(void)
+{
+
+}
+
+
+bool action_key_event(key_info_t *key_ev)
+{
+    bool ret_code = false;
+    uint8_t code = get_keycode(key_ev->row, key_ev->col);
+    if (IS_KEY(code)){
+        if(key_ev->stat)
+        {
+            ret_code = add_key(code);
+        }
+        else
+        {
+            ret_code = del_key(code);
+        }
+        KEYCODE_DEBUG_LOG("KEY : 0x%X Status : %s Ret: %d \r\n" , code, key_ev->stat ? "press": "release", ret_code);
+
+    }
+    else if (IS_MOD(code)){
+        if(key_ev->stat)
+        {
+            ret_code = add_mod(code);
+        }
+        else
+        {
+            ret_code = del_mod(code);
+        }
+        KEYCODE_DEBUG_LOG("MOD : 0x%X Status : %s Ret: %d \r\n" , code, key_ev->stat ? "press": "release", ret_code);
+    }
+    else if (IS_FN(code)){
+        ret_code = false;
+        KEYCODE_DEBUG_LOG("FN : 0x%X Status : %s \r\n" , code, key_ev->stat ? "press": "release");
+    }
+    else {
+        ret_code = false;
+        KEYCODE_DEBUG_LOG("Other: 0x%X Status : %s \r\n", code, key_ev->stat ? "press": "release");
+    }
+    return ret_code;
+}
+
+#ifdef HID_REPORT_DEBUG
+void kb_report_debug(void)
+{
+    NRF_LOG_HEXDUMP_DEBUG(&kb_data, 10);
+}
 #endif
 
 
-void action_key_event(key_info_t *key_ev){
-    uint8_t code = get_keycode(key_ev->row, key_ev->col);
-    if (IS_KEY(code)){
-        KEYCODE_DEBUG("KEY : 0x%X Status : %s \r\n" , code, key_ev->stat ? "press": "release");
+int8_t key_index(uint8_t code)
+{
+    int8_t key_pos = -1;
+    for(uint8_t i = 0; i < kb_data.pos; i++)
+    {
+        if(kb_data.array[i] == code)
+        {
+            key_pos = i;
+        }
     }
-    else if (IS_MOD(code)){
-        KEYCODE_DEBUG("MOD : 0x%X Status : %s \r\n" , code, key_ev->stat ? "press": "release");
+    return key_pos;
+}
+
+bool add_key(uint8_t code){
+    if (kb_data.pos < KB_REPORT_ARRAY_MAX && key_index(code) == -1){
+        kb_data.array[kb_data.pos] = code;
+        kb_data.pos ++;
+        return true;
     }
-    else if (IS_FN(code)){
-        KEYCODE_DEBUG("FN : 0x%X Status : %s \r\n" , code, key_ev->stat ? "press": "release");
+    return false;
+}
+
+bool del_key(uint8_t code)
+{
+    int8_t key_pos = key_index(code);
+
+    if(key_pos != -1)
+    {
+        for (uint8_t i = key_pos; i < (kb_data.pos - 1); i++)
+        {
+            kb_data.array[i] = kb_data.array[i+1];
+        }
+
+        if (kb_data.pos > 0)
+        {
+            kb_data.pos -- ;
+        }
+        return true;
     }
-    else {
-        KEYCODE_DEBUG("Other: 0x%X Status : %s \r\n", code, key_ev->stat ? "press": "release");
-    }
+    return false;
+}
+
+bool add_mod(uint8_t code)
+{
+    return false;
+}
+
+bool del_mod(uint8_t code)
+{
+    return false;
 }

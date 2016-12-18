@@ -64,12 +64,6 @@
 #include "layer.h"
 
 
-#define GPIO_DEBUG_OUTPUT_PIN_NUMBER 2
-#define GPIO_LED_OUTPUT_PIN_NUMBER 3
-#define GPIO_BUTTON_INPUT_PIN_NUMBER 8
-#define GPIO_TX_PIN_NUMBER 23
-#define GPIO_RX_PIN_NUMBER 24
-
 #if (NRF_SD_BLE_API_VERSION == 3)
 #define NRF_BLE_MAX_MTU_SIZE            GATT_MTU_SIZE_DEFAULT                       /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #endif
@@ -914,8 +908,9 @@ int main(void)
     NRF_LOG_DEBUG("button_event_setup.\r\n");
 
     button_event_setup();
-    layer_init();
     debug_led_init();
+
+    layer_init();
     timer_init();
 
     key_info_t key_ev;
