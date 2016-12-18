@@ -477,8 +477,8 @@ static void conn_params_init(void)
 static void sleep_mode_enter(void)
 {
     uint32_t err_code;
-
     // Go to system-off mode (this function will not return; wakeup will cause a reset).
+    wakeup_button_setup();
     err_code = sd_power_system_off();
     APP_ERROR_CHECK(err_code);
 }
@@ -518,6 +518,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             break; //BLE_ADV_EVT_SLOW_WHITELIST
 
         case BLE_ADV_EVT_IDLE:
+            NRF_LOG_INFO("BLE_ADV_EVT_IDLE.\r\n");
             sleep_mode_enter();
             break; //BLE_ADV_EVT_IDLE
 
@@ -854,35 +855,42 @@ static void advertising_init(void)
 static void power_manage(void)
 {
     uint32_t err_code = sd_app_evt_wait();
-
     APP_ERROR_CHECK(err_code);
 }
 
 
-static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+static void reset_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
-    NRF_LOG_DEBUG("Soft System Reset !! \r\n");
+    NRF_LOG_INFO("Soft System Reset.\r\n");
     nrf_delay_us(100);
     sd_nvic_SystemReset();
 }
 
-static void button_event_setup(void)
+static void wakeup_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+{
+}
+
+static void reset_button_setup(void)
 {
     ret_code_t err_code;
-
-    nrf_drv_gpiote_out_config_t out_config = GPIOTE_CONFIG_OUT_SIMPLE(false);
-
-    err_code = nrf_drv_gpiote_out_init(GPIO_DEBUG_OUTPUT_PIN_NUMBER, &out_config);
-    APP_ERROR_CHECK(err_code);
-
-    nrf_drv_gpiote_in_config_t in_config = GPIOTE_CONFIG_IN_SENSE_LOTOHI(true);
+    nrf_drv_gpiote_in_config_t in_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(true);
     in_config.pull = NRF_GPIO_PIN_PULLUP;
-
-    err_code = nrf_drv_gpiote_in_init(GPIO_BUTTON_INPUT_PIN_NUMBER, &in_config, in_pin_handler);
+    err_code = nrf_drv_gpiote_in_init(GPIO_BUTTON_INPUT_PIN_NUMBER, &in_config, reset_pin_handler);
     APP_ERROR_CHECK(err_code);
-
     nrf_drv_gpiote_in_event_enable(GPIO_BUTTON_INPUT_PIN_NUMBER, true);
+}
 
+static void wakeup_button_setup(void)
+{
+    NRF_LOG_INFO("Wakeup button setup.\r\n");
+    ret_code_t err_code;
+    nrf_drv_gpiote_in_event_disable(GPIO_BUTTON_INPUT_PIN_NUMBER);
+    nrf_drv_gpiote_in_uninit(GPIO_BUTTON_INPUT_PIN_NUMBER);
+    nrf_drv_gpiote_in_config_t in_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(false);
+    in_config.pull = NRF_GPIO_PIN_PULLUP;
+    err_code = nrf_drv_gpiote_in_init(GPIO_BUTTON_INPUT_PIN_NUMBER, &in_config, wakeup_pin_handler);
+    APP_ERROR_CHECK(err_code);
+    nrf_drv_gpiote_in_event_enable(GPIO_BUTTON_INPUT_PIN_NUMBER, true);
 }
 
 static void debug_led_init(void)
@@ -906,10 +914,9 @@ int main(void)
     err_code = nrf_drv_gpiote_init();
     APP_ERROR_CHECK(err_code);
 
-    NRF_LOG_DEBUG("button_event_setup.\r\n");
 
-    button_event_setup();
     debug_led_init();
+    reset_button_setup();
 
     layer_init();
     timer_init();
@@ -921,7 +928,7 @@ int main(void)
 
     if (layer_key_check(&key_ev))
     {
-        NRF_LOG_DEBUG("press key, BLE erase bonds! \r\n");
+        NRF_LOG_INFO("press key, BLE erase bonds! \r\n");
         erase_bonds = true;
     }
 

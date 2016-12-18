@@ -20,8 +20,10 @@
 
 int main(void);
 
-static void button_event_setup(void);
-static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action);
+static void reset_button_setup(void);
+static void wakeup_button_setup(void);
+static void wakeup_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action);
+static void reset_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action);
 
 #define NRF_CLOCK_LFCLKSRC      {.source        = NRF_CLOCK_LF_SRC_XTAL,            \
                                  .rc_ctiv       = 0,                                \
