@@ -32,11 +32,14 @@
 #include "actions.h"
 
 
-static bool layer_prev[MATRIX_ROWS][MATRIX_COLS] = {0};
-static bool layer_current[MATRIX_ROWS][MATRIX_COLS] = {0};
+static bool layer_key_info_match(key_info_t * key_ev);
+static void layer_read(void);
+static void layer_diff(void);
+
+uint8_t layer_prev[MATRIX_ROWS][MATRIX_COLS];
+uint8_t layer_current[MATRIX_ROWS][MATRIX_COLS];
 
 static void layer_read(void){
-    nrf_drv_gpiote_out_clear(GPIO_LED_OUTPUT_PIN_NUMBER);
     uint32_t cols_value = -1;
     for (uint8_t i=0; i < MATRIX_ROWS; i++)
     {
@@ -48,7 +51,6 @@ static void layer_read(void){
         }
         matrix_unselect_row(i);
     }
-    nrf_drv_gpiote_out_set(GPIO_LED_OUTPUT_PIN_NUMBER);
 }
 bool layer_key_check(key_info_t *key_ev){
     layer_read();
@@ -81,6 +83,8 @@ static void layer_diff(void){
 }
 
 void layer_init(void){
+    memset(layer_prev, 1, sizeof(layer_prev));
+    memset(layer_current,1, sizeof(layer_current));
     matrix_init();
 }
 
