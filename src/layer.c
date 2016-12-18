@@ -32,6 +32,7 @@
 #include "actions.h"
 
 
+
 static bool layer_key_info_match(key_info_t * key_ev);
 static void layer_read(void);
 static void layer_diff(void);
@@ -83,9 +84,10 @@ static void layer_diff(void){
 }
 
 void layer_init(void){
-    memset(layer_prev, 1, sizeof(layer_prev));
-    memset(layer_current,1, sizeof(layer_current));
     matrix_init();
+    memset(layer_prev, 0, sizeof(layer_prev));
+    memset(layer_current,0, sizeof(layer_current));
+    action_report_init();
 }
 
 void layer_process_timeout_handler(void * p_context){
@@ -93,9 +95,5 @@ void layer_process_timeout_handler(void * p_context){
     layer_read();
     layer_diff();
     memcpy(layer_prev, layer_current, sizeof(layer_prev));
-
-#ifdef HID_REPORT_DEBUG
-    kb_report_debug();
-#endif
-
+    action_report_send();
 }

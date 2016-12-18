@@ -23,10 +23,13 @@
 #include "nrf_log.h"
 
 #include "keyboard_config.h"
+#include "hids_service_report.h"
 #include "keycode.h"
 #include "keymap_common.h"
 #include "layer.h"
 #include "actions.h"
+
+#define INPUT_REPORT_KEYS_MAX_LEN        8
 
 #ifdef KEYCODE_DEBUG
 #define KEYCODE_DEBUG_LOG(...)  NRF_LOG_DEBUG(__VA_ARGS__)
@@ -36,9 +39,9 @@
 
 static kb_report_data_t kb_data = {0};
 
-void kb_report_init(void)
+void action_report_init(void)
 {
-
+    memset(&kb_data, 0, sizeof(kb_data));
 }
 
 
@@ -80,12 +83,24 @@ bool action_key_event(key_info_t *key_ev)
     return ret_code;
 }
 
-#ifdef HID_REPORT_DEBUG
-void kb_report_debug(void)
+
+bool action_report_send(void)
 {
-    NRF_LOG_HEXDUMP_DEBUG(&kb_data, 10);
-}
+    bool ret = false;
+    uint8_t data[INPUT_REPORT_KEYS_MAX_LEN];
+    memset(&data, 0, INPUT_REPORT_KEYS_MAX_LEN);
+    memcpy(&data, &kb_data, kb_data.pos + 2);
+#ifdef HID_REPORT_DEBUG
+    NRF_LOG_HEXDUMP_DEBUG(&data, INPUT_REPORT_KEYS_MAX_LEN);
 #endif
+    ret = send_key_report((uint8_t *)&data, INPUT_REPORT_KEYS_MAX_LEN);
+#ifdef HID_REPORT_DEBUG
+    if (!ret){
+        NRF_LOG_INFO("send_key_report fail.\r\n");
+    }
+#endif
+    return ret;
+}
 
 
 int8_t key_index(uint8_t code)
@@ -132,10 +147,12 @@ bool del_key(uint8_t code)
 
 bool add_mod(uint8_t code)
 {
-    return false;
+    kb_data.modifier |= MOD_BIT(code);
+    return true;
 }
 
 bool del_mod(uint8_t code)
 {
-    return false;
+    kb_data.modifier &= ~MOD_BIT(code);
+    return true;
 }

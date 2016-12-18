@@ -34,6 +34,7 @@
 #include "app_error.h"
 
 #include "hids_service.h"
+#include "hids_service_report.h"
 #include "matrix.h"
 
 static bool       m_in_boot_mode = false;                   /**< Current protocol mode. */
@@ -340,6 +341,31 @@ static uint32_t send_key_scan_press_release(ble_hids_t * p_hids,
 
     return err_code;
 }
+
+bool send_key_report(uint8_t * data, uint8_t len){
+    uint32_t err_code;
+    if (!m_in_boot_mode)
+    {
+        err_code = ble_hids_inp_rep_send(&m_hids, INPUT_REPORT_KEYS_INDEX, len, data);
+    }
+    else
+    {
+        err_code = ble_hids_boot_kb_inp_rep_send(&m_hids, len, data);
+    }
+
+    if ((err_code != NRF_SUCCESS) &&
+        (err_code != NRF_ERROR_INVALID_STATE) &&
+        (err_code != BLE_ERROR_NO_TX_PACKETS) &&
+        (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+       )
+    {
+        APP_ERROR_HANDLER(err_code);
+    }
+
+    return err_code == NRF_SUCCESS;
+}
+
+
 
 /**@brief Function for handling HID events.
  *

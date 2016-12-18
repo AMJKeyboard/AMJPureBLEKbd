@@ -34,5 +34,5 @@
 
 
 //#define MATRIX_DEBUG
-//#define KEYCODE_DEBUG
+#define KEYCODE_DEBUG
 #define HID_REPORT_DEBUG
