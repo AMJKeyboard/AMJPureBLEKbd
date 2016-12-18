@@ -74,11 +74,13 @@ bool action_key_event(key_info_t *key_ev)
         KEYCODE_DEBUG_LOG("MOD : 0x%X Status : %d Ret: %d \r\n" , code, key_ev->stat, ret_code);
     }
     else if (IS_FN(code)){
-        ret_code = false;
+        if (code == KC_FN0){
+            keymap_switch(key_ev->stat);
+            ret_code = true;
+        }
         KEYCODE_DEBUG_LOG("FN : 0x%X Status : %d \r\n" , code, key_ev->stat);
     }
     else {
-        ret_code = false;
         KEYCODE_DEBUG_LOG("Other: 0x%X Status : %d \r\n", code, key_ev->stat);
     }
     return ret_code;

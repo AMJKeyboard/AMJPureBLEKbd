@@ -29,6 +29,16 @@ uint8_t keymap_default_layer = 0;
 
 
 uint8_t get_keycode(uint8_t row, uint8_t col){
-    return keymaps[keymap_default_layer][row][col];
+    uint8_t key_code = keymaps[keymap_default_layer][row][col];
+    if (key_code == KC_ROLL_OVER && keymap_default_layer != 0)
+    {
+        key_code = keymaps[0][row][col];
+    }
+    return key_code;
+}
+
+void keymap_switch(uint8_t layer)
+{
+    keymap_default_layer = layer;
 }
 

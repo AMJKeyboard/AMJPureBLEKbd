@@ -31,3 +31,4 @@
 }
 
 uint8_t get_keycode(uint8_t row, uint8_t col);
+void keymap_switch(uint8_t layer);
