@@ -24,6 +24,7 @@
 
 #include "keyboard_config.h"
 #include "hids_service_report.h"
+#include "ble_status.h"
 #include "keycode.h"
 #include "keymap_common.h"
 #include "layer.h"
@@ -90,15 +91,18 @@ bool action_report_send(void)
     uint8_t data[INPUT_REPORT_KEYS_MAX_LEN];
     memset(&data, 0, INPUT_REPORT_KEYS_MAX_LEN);
     memcpy(&data, &kb_data, kb_data.pos + 2);
+
+    if (ble_has_connect()){
 #ifdef HID_REPORT_DEBUG
-    NRF_LOG_HEXDUMP_DEBUG(&data, INPUT_REPORT_KEYS_MAX_LEN);
+        NRF_LOG_HEXDUMP_DEBUG(&data, INPUT_REPORT_KEYS_MAX_LEN);
 #endif
-    ret = send_key_report((uint8_t *)&data, INPUT_REPORT_KEYS_MAX_LEN);
+        ret = send_key_report((uint8_t *)&data, INPUT_REPORT_KEYS_MAX_LEN);
 #ifdef HID_REPORT_DEBUG
-    if (!ret){
-        NRF_LOG_INFO("send_key_report fail.\r\n");
+        if (!ret){
+            NRF_LOG_INFO("send_key_report fail.\r\n");
+        }
+#endif
     }
-#endif
     return ret;
 }
 

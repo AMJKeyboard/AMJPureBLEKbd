@@ -61,6 +61,7 @@
 #include "timers.h"
 #include "battery_service.h"
 #include "hids_service.h"
+#include "ble_status.h"
 #include "layer.h"
 
 
@@ -562,6 +563,10 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
         default:
             break;
     }
+}
+
+bool ble_has_connect(void){
+    return m_conn_handle != BLE_CONN_HANDLE_INVALID;
 }
 
 
