@@ -27,7 +27,7 @@
 
 
 #define BATTERY_LEVEL_MEAS_INTERVAL      APP_TIMER_TICKS(2000, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
-#define LAYER_PROCESS_INTERVAL      APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
+#define LAYER_PROCESS_INTERVAL      APP_TIMER_TICKS(100, APP_TIMER_PRESCALER)
 
 APP_TIMER_DEF(m_battery_timer_id);                          /**< Battery timer. */
 APP_TIMER_DEF(m_layout_timer_id);                          /**< Battery timer. */
