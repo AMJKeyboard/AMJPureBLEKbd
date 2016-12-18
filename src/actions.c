@@ -59,7 +59,7 @@ bool action_key_event(key_info_t *key_ev)
         {
             ret_code = del_key(code);
         }
-        KEYCODE_DEBUG_LOG("KEY : 0x%X Status : %s Ret: %d \r\n" , code, key_ev->stat ? "press": "release", ret_code);
+        KEYCODE_DEBUG_LOG("KEY : 0x%X Status : %d Ret: %d \r\n" , code, key_ev->stat, ret_code);
 
     }
     else if (IS_MOD(code)){
@@ -71,15 +71,15 @@ bool action_key_event(key_info_t *key_ev)
         {
             ret_code = del_mod(code);
         }
-        KEYCODE_DEBUG_LOG("MOD : 0x%X Status : %s Ret: %d \r\n" , code, key_ev->stat ? "press": "release", ret_code);
+        KEYCODE_DEBUG_LOG("MOD : 0x%X Status : %d Ret: %d \r\n" , code, key_ev->stat, ret_code);
     }
     else if (IS_FN(code)){
         ret_code = false;
-        KEYCODE_DEBUG_LOG("FN : 0x%X Status : %s \r\n" , code, key_ev->stat ? "press": "release");
+        KEYCODE_DEBUG_LOG("FN : 0x%X Status : %d \r\n" , code, key_ev->stat);
     }
     else {
         ret_code = false;
-        KEYCODE_DEBUG_LOG("Other: 0x%X Status : %s \r\n", code, key_ev->stat ? "press": "release");
+        KEYCODE_DEBUG_LOG("Other: 0x%X Status : %d \r\n", code, key_ev->stat);
     }
     return ret_code;
 }
