@@ -33,6 +33,6 @@
 #define GPIO_RX_PIN_NUMBER 24
 
 
-#define MATRIX_DEBUG
-#define KEYCODE_DEBUG
+//#define MATRIX_DEBUG
+//#define KEYCODE_DEBUG
 #define HID_REPORT_DEBUG
