@@ -151,6 +151,7 @@ SET(SRC_DRIVERS
 
     ${SDK_ROOT}/components/drivers_nrf/gpiote/nrf_drv_gpiote.c
     ${SDK_ROOT}/components/drivers_nrf/uart/nrf_drv_uart.c
+    ${SDK_ROOT}/components/drivers_nrf/twi_master/nrf_drv_twi.c
 )
 
 SET(SRC_LIBRARIES
@@ -211,6 +212,7 @@ SET(SRC_APP ${CMAKE_SOURCE_DIR}/src/main.c
             ${CMAKE_SOURCE_DIR}/src/timers.c
             ${CMAKE_SOURCE_DIR}/src/layer.c
             ${CMAKE_SOURCE_DIR}/src/actions.c
+            ${CMAKE_SOURCE_DIR}/src/eeprom.c
             ${CMAKE_SOURCE_DIR}/src/keymap_common.c
             ${CMAKE_SOURCE_DIR}/src/keymap_default.c)
 

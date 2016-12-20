@@ -63,6 +63,7 @@
 #include "hids_service.h"
 #include "ble_status.h"
 #include "layer.h"
+#include "eeprom.h"
 
 
 #if (NRF_SD_BLE_API_VERSION == 3)
@@ -920,6 +921,16 @@ int main(void)
 
     layer_init();
     timer_init();
+    NRF_LOG_DEBUG("EEPROM init. \r\n");
+    twi_init();
+    uint16_t eep_address = 0x0;
+    uint8_t eep_data = 0xAA;
+    twi_eeprom_write_byte(EEPROM_BLOCK_0, eep_address, eep_data);
+    NRF_LOG_DEBUG("EEPROM write. DATA:0x%X \r\n", eep_data);
+    eep_data = 0xFF;
+    eep_data = twi_eeprom_read_byte(EEPROM_BLOCK_0, eep_address);
+    NRF_LOG_DEBUG("EEPROM read. DATA:0x%X \r\n", eep_data)
+
 
     key_info_t key_ev;
     key_ev.row = 0;
@@ -928,7 +939,7 @@ int main(void)
 
     if (layer_key_check(&key_ev))
     {
-        NRF_LOG_INFO("press key, BLE erase bonds! \r\n");
+        NRF_LOG_INFO("Press key, BLE erase bonds! \r\n");
         erase_bonds = true;
     }
 
