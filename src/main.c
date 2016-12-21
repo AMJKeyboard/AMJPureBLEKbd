@@ -42,6 +42,7 @@
 #include "ble_bas.h"
 #include "ble_hids.h"
 #include "ble_dis.h"
+#include "ble_nus.h"
 #include "ble_conn_params.h"
 #include "ble_conn_state.h"
 
@@ -61,6 +62,7 @@
 #include "timers.h"
 #include "battery_service.h"
 #include "hids_service.h"
+#include "nus_service.h"
 #include "ble_status.h"
 #include "layer.h"
 #include "eeprom.h"
@@ -130,6 +132,7 @@
 #define APP_FEATURE_NOT_SUPPORTED        BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
 
 
+#define NUS_SERVICE_UUID_TYPE           BLE_UUID_TYPE_VENDOR_BEGIN                  /**< UUID type for the Nordic UART Service (vendor specific). */
 
 #define DEAD_BEEF                        0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
@@ -143,6 +146,7 @@
 
 ble_hids_t m_hids;                                   /**< Structure used to identify the HID service. */
 ble_bas_t  m_bas;                                    /**< Structure used to identify the battery service. */
+ble_nus_t  m_nus;                                      /**< Structure to identify the Nordic UART Service. */
 
 static uint16_t   m_conn_handle  = BLE_CONN_HANDLE_INVALID; /**< Handle of the current connection. */
 
@@ -156,6 +160,7 @@ static bool           m_is_wl_changed;                                      /**<
 
 static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE, BLE_UUID_TYPE_BLE}};
 
+static ble_uuid_t m_adv_uuids_scrp[] = {{BLE_UUID_NUS_SERVICE, NUS_SERVICE_UUID_TYPE}};  /**< Universally unique service identifier. */
 
 
 
@@ -429,6 +434,7 @@ static void services_init(void)
     dis_init();
     bas_init();
     hids_init();
+    nus_init();
 }
 
 
@@ -695,6 +701,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     ble_conn_params_on_ble_evt(p_ble_evt);
     ble_hids_on_ble_evt(&m_hids, p_ble_evt);
     ble_bas_on_ble_evt(&m_bas, p_ble_evt);
+    ble_nus_on_ble_evt(&m_nus, p_ble_evt);
 }
 
 
@@ -816,6 +823,7 @@ static void advertising_init(void)
     uint8_t                adv_flags;
     ble_advdata_t          advdata;
     ble_adv_modes_config_t options;
+    ble_advdata_t          scanrsp;
 
     // Build and set advertising data
     memset(&advdata, 0, sizeof(advdata));
@@ -840,8 +848,13 @@ static void advertising_init(void)
     options.ble_adv_slow_interval          = APP_ADV_SLOW_INTERVAL;
     options.ble_adv_slow_timeout           = APP_ADV_SLOW_TIMEOUT;
 
+    memset(&scanrsp, 0, sizeof(scanrsp));
+    scanrsp.uuids_complete.uuid_cnt = sizeof(m_adv_uuids_scrp) / sizeof(m_adv_uuids_scrp[0]);
+    scanrsp.uuids_complete.p_uuids  = m_adv_uuids_scrp;
+
+
     err_code = ble_advertising_init(&advdata,
-                                    NULL,
+                                    &scanrsp,
                                     &options,
                                     on_adv_evt,
                                     ble_advertising_error_handler);
@@ -924,10 +937,11 @@ int main(void)
     NRF_LOG_DEBUG("EEPROM init. \r\n");
     twi_init();
     uint16_t eep_address = 0x0;
-    uint8_t eep_data = 0xAA;
-    twi_eeprom_write_byte(EEPROM_BLOCK_0, eep_address, eep_data);
-    NRF_LOG_DEBUG("EEPROM write. DATA:0x%X \r\n", eep_data);
-    eep_data = 0xFF;
+    uint8_t eep_data = 0xFF;
+/*     twi_eeprom_write_byte(EEPROM_BLOCK_0, eep_address, eep_data);
+ *     NRF_LOG_DEBUG("EEPROM write. DATA:0x%X \r\n", eep_data);
+ *     eep_data = 0xFF;
+ */
     eep_data = twi_eeprom_read_byte(EEPROM_BLOCK_0, eep_address);
     NRF_LOG_DEBUG("EEPROM read. DATA:0x%X \r\n", eep_data)
 
@@ -947,8 +961,8 @@ int main(void)
     scheduler_init();
     peer_manager_init(erase_bonds);
     gap_params_init();
-    advertising_init();
     services_init();
+    advertising_init();
     conn_params_init();
 
     // Start execution.

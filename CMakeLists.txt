@@ -203,12 +203,14 @@ SET(SRC_BLE_SERVICES
     ${SDK_ROOT}/components/ble/ble_services/ble_bas/ble_bas.c
     ${SDK_ROOT}/components/ble/ble_services/ble_dis/ble_dis.c
     ${SDK_ROOT}/components/ble/ble_services/ble_hids/ble_hids.c
+    ${SDK_ROOT}/components/ble/ble_services/ble_nus/ble_nus.c
 )
 
 SET(SRC_APP ${CMAKE_SOURCE_DIR}/src/main.c
             ${CMAKE_SOURCE_DIR}/src/matrix.c
             ${CMAKE_SOURCE_DIR}/src/battery_service.c
             ${CMAKE_SOURCE_DIR}/src/hids_service.c
+            ${CMAKE_SOURCE_DIR}/src/nus_service.c
             ${CMAKE_SOURCE_DIR}/src/timers.c
             ${CMAKE_SOURCE_DIR}/src/layer.c
             ${CMAKE_SOURCE_DIR}/src/actions.c
