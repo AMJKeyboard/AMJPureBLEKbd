@@ -17,3 +17,4 @@
  */
 
 bool send_key_report(uint8_t * data, uint8_t len);
+bool send_consumer_report(uint16_t data);

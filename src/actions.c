@@ -73,6 +73,16 @@ bool action_key_event(key_info_t *key_ev)
         }
         KEYCODE_DEBUG_LOG("MOD : 0x%X Status : %d Ret: %d \r\n" , code, key_ev->stat, ret_code);
     }
+    else if (IS_CONSUMER(code)){
+        if(key_ev -> stat)
+        {
+            ret_code = send_consumer_report(KEYCODE2CONSUMER(code));
+        }
+        else{
+            ret_code = send_consumer_report((uint16_t)0x0);
+        }
+        KEYCODE_DEBUG_LOG("CON : 0x%X Status : %d Ret: %d \r\n" , code, key_ev->stat, ret_code);
+    }
     else if (IS_FN(code)){
         if (code == KC_FN0){
             keymap_switch(key_ev->stat);

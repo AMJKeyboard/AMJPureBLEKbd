@@ -45,9 +45,12 @@ extern ble_hids_t m_hids;                                   /**< Structure used 
 #define OUTPUT_REPORT_INDEX              0                                           /**< Index of Output Report. */
 #define OUTPUT_REPORT_MAX_LEN            1                                           /**< Maximum length of Output Report. */
 #define INPUT_REPORT_KEYS_INDEX          0                                           /**< Index of Input Report. */
-#define INPUT_REP_REF_ID                 0                                           /**< Id of reference to Keyboard Input Report. */
+#define INPUT_REPORT_CONSUMER_INDEX      1                                           /**< Index of Input Report. */
+#define INPUT_REP_KEYS_REF_ID            1                                           /**< Id of reference to Keyboard Input Report. */
 #define OUTPUT_REP_REF_ID                0                                           /**< Id of reference to Keyboard Output Report. */
+#define INPUT_REP_CONSUMER_REF_ID        2                                           /**< Id of reference to Keyboard Input Report. */
 #define INPUT_REPORT_KEYS_MAX_LEN        8                                           /**< Maximum length of the Input Report characteristic. */
+#define INPUT_REPORT_CONSUMER_MAX_LEN    2                                           /**< Index of Input Report. */
 
 
 
@@ -57,13 +60,13 @@ void hids_init(void)
 {
     uint32_t                   err_code;
     ble_hids_init_t            hids_init_obj;
-    ble_hids_inp_rep_init_t    input_report_array[1];
+    ble_hids_inp_rep_init_t    input_report_array[2];
     ble_hids_inp_rep_init_t  * p_input_report;
     ble_hids_outp_rep_init_t   output_report_array[1];
     ble_hids_outp_rep_init_t * p_output_report;
     uint8_t                    hid_info_flags;
 
-    memset((void *)input_report_array, 0, sizeof(ble_hids_inp_rep_init_t));
+    memset((void *)input_report_array, 0, sizeof(ble_hids_inp_rep_init_t) * 2);
     memset((void *)output_report_array, 0, sizeof(ble_hids_outp_rep_init_t));
 
     static uint8_t report_map_data[] =
@@ -71,6 +74,7 @@ void hids_init(void)
         0x05, 0x01,       // Usage Page (Generic Desktop)
         0x09, 0x06,       // Usage (Keyboard)
         0xA1, 0x01,       // Collection (Application)
+        0x85, INPUT_REP_KEYS_REF_ID,//     Report Id (1)
         0x05, 0x07,       // Usage Page (Key Codes)
         0x19, 0xe0,       // Usage Minimum (224)
         0x29, 0xe7,       // Usage Maximum (231)
@@ -110,13 +114,39 @@ void hids_init(void)
         0x95, 0x02,       // Report Size (8 bit)
         0xB1, 0x02,       // Feature (Data, Variable, Absolute)
 
-        0xC0              // End Collection (Application)
+        0xC0,              // End Collection (Application)
+
+        0x05, 0x0C,                     // Usage Page (Consumer)
+        0x09, 0x01,                     // Usage (Consumer Control)
+        0xA1, 0x01,                     // Collection (Application)
+        0x85, INPUT_REP_CONSUMER_REF_ID,//     Report Id (2)
+
+        0x19, 0x00,
+        0x2A, 0x3C, 0x02,
+
+        0x15, 0x00,
+        0x26, 0x3C, 0x02,
+
+        0x95, 0x01,                     //     Report Count (1)
+        0x75, 0x10,                     //     Report Size (16)
+        0x81, 0x00,                     //     Input ()
+        0xC0                            // End Collection
     };
 
     // Initialize HID Service
     p_input_report                      = &input_report_array[INPUT_REPORT_KEYS_INDEX];
     p_input_report->max_len             = INPUT_REPORT_KEYS_MAX_LEN;
-    p_input_report->rep_ref.report_id   = INPUT_REP_REF_ID;
+    p_input_report->rep_ref.report_id   = INPUT_REP_KEYS_REF_ID;
+    p_input_report->rep_ref.report_type = BLE_HIDS_REP_TYPE_INPUT;
+
+    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&p_input_report->security_mode.cccd_write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&p_input_report->security_mode.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&p_input_report->security_mode.write_perm);
+
+
+    p_input_report                      = &input_report_array[INPUT_REPORT_CONSUMER_INDEX];
+    p_input_report->max_len             = INPUT_REPORT_CONSUMER_MAX_LEN;
+    p_input_report->rep_ref.report_id   = INPUT_REP_CONSUMER_REF_ID;
     p_input_report->rep_ref.report_type = BLE_HIDS_REP_TYPE_INPUT;
 
     BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&p_input_report->security_mode.cccd_write_perm);
@@ -139,7 +169,7 @@ void hids_init(void)
     hids_init_obj.error_handler                  = service_error_handler;
     hids_init_obj.is_kb                          = true;
     hids_init_obj.is_mouse                       = false;
-    hids_init_obj.inp_rep_count                  = 1;
+    hids_init_obj.inp_rep_count                  = 2;
     hids_init_obj.p_inp_rep_array                = input_report_array;
     hids_init_obj.outp_rep_count                 = 1;
     hids_init_obj.p_outp_rep_array               = output_report_array;
@@ -195,6 +225,29 @@ bool send_key_report(uint8_t * data, uint8_t len){
         APP_ERROR_HANDLER(err_code);
     }
 
+    return err_code == NRF_SUCCESS;
+}
+
+bool send_consumer_report(uint16_t data){
+    uint32_t err_code;
+    uint8_t buf[INPUT_REPORT_CONSUMER_MAX_LEN] = {0};
+    buf[0] = data & 0xFF;
+    buf[1] = data >> 8;
+
+
+    NRF_LOG_INFO("CONSUMER  DATA 0x%X 0x%X \r\n", buf[0], buf[1]);
+
+    err_code = ble_hids_inp_rep_send(&m_hids, INPUT_REPORT_CONSUMER_INDEX,
+            INPUT_REPORT_CONSUMER_MAX_LEN, (uint8_t *)&buf);
+
+    if ((err_code != NRF_SUCCESS) &&
+        (err_code != NRF_ERROR_INVALID_STATE) &&
+        (err_code != BLE_ERROR_NO_TX_PACKETS) &&
+        (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+       )
+    {
+        APP_ERROR_HANDLER(err_code);
+    }
     return err_code == NRF_SUCCESS;
 }
 
