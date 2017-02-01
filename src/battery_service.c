@@ -50,6 +50,13 @@
  *
  * RANGE
  * 0x2B0 - 0x1A0 = 0x110
+ *
+ * RECOMMEND
+ * 6M, 2.2M, 9bit
+ * MAX 0x1f7 4.4V
+ * MIN 0x127 2.58V
+ * RANGE
+ * 0X1F7 - 0X127 = 0XD0
  */
 
 #define BATTERY_ADC_MAX 0x2B0
