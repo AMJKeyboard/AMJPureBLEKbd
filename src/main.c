@@ -250,6 +250,7 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
         case PM_EVT_BONDED_PEER_CONNECTED:
         {
             NRF_LOG_INFO("Connected to a previously bonded device.\r\n");
+            status_led_stop();
         } break;
 
         case PM_EVT_CONN_SEC_SUCCEEDED:
@@ -268,6 +269,7 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
                 NRF_LOG_INFO("\tm_whitelist_peer_cnt %d, MAX_PEERS_WLIST %d\r\n",
                                m_whitelist_peer_cnt + 1,
                                BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
+                status_led_stop();
 
                 if (m_whitelist_peer_cnt < BLE_GAP_WHITELIST_ADDR_MAX_COUNT)
                 {
@@ -591,7 +593,6 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     {
         case BLE_GAP_EVT_CONNECTED:
             NRF_LOG_INFO("Connected\r\n");
-            status_led_stop();
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             break; // BLE_GAP_EVT_CONNECTED
 
@@ -964,8 +965,8 @@ int main(void)
     NRF_LOG_INFO("HID Keyboard Start!\r\n");
     layer_timer_start();
     bas_timer_start();
-    advertising_start();
     status_led_start();
+    advertising_start();
     // Enter main loop.
     for (;;)
     {
