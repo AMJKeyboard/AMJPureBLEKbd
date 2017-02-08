@@ -124,6 +124,7 @@ INCLUDE_DIRECTORIES(
     ${SDK_ROOT}/external/freertos/portable
     ${SDK_ROOT}/external/freertos/portable/CMSIS/nrf51/
     ${SDK_ROOT}/external/freertos/portable/GCC/nrf51/
+    ${SDK_ROOT}/external/segger_rtt/
     ${SDK_ROOT}/components/softdevice/common/softdevice_handler
     ${SDK_ROOT}/components/softdevice/s130/headers
     ${SDK_ROOT}/components/softdevice/s130/headers/nrf51
@@ -180,6 +181,11 @@ SET(SRC_LIBRARIES
     ${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
     ${SDK_ROOT}/components/libraries/scheduler/app_scheduler.c
     ${SDK_ROOT}/components/libraries/uart/retarget.c
+
+    ${SDK_ROOT}/external/segger_rtt/RTT_Syscalls_GCC.c
+    ${SDK_ROOT}/external/segger_rtt/SEGGER_RTT.c
+    ${SDK_ROOT}/external/segger_rtt/SEGGER_RTT_printf.c
+
 )
 
 SET(SRC_BLE
