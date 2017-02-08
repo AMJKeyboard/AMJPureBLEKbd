@@ -968,7 +968,7 @@ int main(void)
     // Start execution.
     NRF_LOG_INFO("HID Keyboard Start!\r\n");
     layer_timer_start();
-    //bas_timer_start();
+    bas_timer_start();
     advertising_start();
 
     // Enter main loop.
