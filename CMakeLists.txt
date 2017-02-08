@@ -174,6 +174,9 @@ SET(SRC_LIBRARIES
     ${SDK_ROOT}/components/libraries/log/src/nrf_log_frontend.c
     ${SDK_ROOT}/components/libraries/log/src/nrf_log_backend_serial.c
 
+    ${SDK_ROOT}/components/libraries/low_power_pwm/low_power_pwm.c
+    ${SDK_ROOT}/components/libraries/led_softblink/led_softblink.c
+
     ${SDK_ROOT}/components/libraries/uart/app_uart_fifo.c
     ${SDK_ROOT}/components/libraries/scheduler/app_scheduler.c
     ${SDK_ROOT}/components/libraries/uart/retarget.c
@@ -207,6 +210,7 @@ SET(SRC_BLE_SERVICES
 )
 
 SET(SRC_APP ${CMAKE_SOURCE_DIR}/src/main.c
+            ${CMAKE_SOURCE_DIR}/src/ble_status_led.c
             ${CMAKE_SOURCE_DIR}/src/matrix.c
             ${CMAKE_SOURCE_DIR}/src/battery_service.c
             ${CMAKE_SOURCE_DIR}/src/hids_service.c

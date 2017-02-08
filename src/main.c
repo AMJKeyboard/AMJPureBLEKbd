@@ -64,6 +64,7 @@
 #include "hids_service.h"
 #include "nus_service.h"
 #include "ble_status.h"
+#include "ble_status_led.h"
 #include "layer.h"
 #include "eeprom.h"
 
@@ -590,6 +591,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     {
         case BLE_GAP_EVT_CONNECTED:
             NRF_LOG_INFO("Connected\r\n");
+            status_led_stop();
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             break; // BLE_GAP_EVT_CONNECTED
 
@@ -599,6 +601,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
         case BLE_GAP_EVT_DISCONNECTED:
             NRF_LOG_INFO("Disconnected\r\n");
+            status_led_start();
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
 
             // disabling alert 3. signal - used for capslock ON
@@ -907,14 +910,6 @@ static void wakeup_button_setup(void)
     nrf_drv_gpiote_in_event_enable(GPIO_BUTTON_INPUT_PIN_NUMBER, true);
 }
 
-static void debug_led_init(void)
-{
-    ret_code_t err_code;
-    nrf_drv_gpiote_out_config_t config = GPIOTE_CONFIG_OUT_TASK_TOGGLE(false);
-    err_code = nrf_drv_gpiote_out_init(GPIO_LED_OUTPUT_PIN_NUMBER, &config);
-    APP_ERROR_CHECK(err_code);
-    nrf_drv_gpiote_out_set(GPIO_LED_OUTPUT_PIN_NUMBER);
-}
 
 
 int main(void)
@@ -929,13 +924,12 @@ int main(void)
     APP_ERROR_CHECK(err_code);
 
 
-    debug_led_init();
     reset_button_setup();
 
-    layer_init();
     timer_init();
-    NRF_LOG_DEBUG("EEPROM init. \r\n");
+    layer_init();
     twi_init();
+
     uint16_t eep_address = 0x0;
     uint8_t eep_data = 0xFF;
 /*     twi_eeprom_write_byte(EEPROM_BLOCK_0, eep_address, eep_data);
@@ -964,13 +958,14 @@ int main(void)
     services_init();
     advertising_init();
     conn_params_init();
+    status_led_init();
 
     // Start execution.
     NRF_LOG_INFO("HID Keyboard Start!\r\n");
     layer_timer_start();
     bas_timer_start();
     advertising_start();
-
+    status_led_start();
     // Enter main loop.
     for (;;)
     {

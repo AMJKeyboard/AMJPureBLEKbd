@@ -806,6 +806,14 @@
 // </h> 
 //==========================================================
 
+#ifndef LOW_POWER_PWM_ENABLED
+#define LOW_POWER_PWM_ENABLED 1
+#endif
+
+#ifndef LED_SOFTBLINK_ENABLED
+#define LED_SOFTBLINK_ENABLED 1
+#endif
+
 // <h> nRF_Log 
 
 //==========================================================
