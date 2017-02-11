@@ -20,3 +20,4 @@ void bas_init(void);
 void bas_adc_init(void);
 void battery_level_update(void);
 void battery_level_meas_timeout_handler(void * p_context);
+void battery_sched_event_handle(void *p_event_data, uint16_t event_size);

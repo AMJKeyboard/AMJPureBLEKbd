@@ -102,7 +102,7 @@ void bas_adc_init(void)
     nrf_adc_configure(&adc_config);
 }
 
-void battery_sched_handle_event(void *p_event_data, uint16_t event_size)
+void battery_sched_event_handle(void *p_event_data, uint16_t event_size)
 {
     battery_level_update();
 }
@@ -140,5 +140,5 @@ void battery_level_update(void)
 void battery_level_meas_timeout_handler(void * p_context)
 {
     UNUSED_PARAMETER(p_context);
-    app_sched_event_put(NULL, 0, &battery_sched_handle_event);
+    app_sched_event_put(NULL, 0, &battery_sched_event_handle);
 }
