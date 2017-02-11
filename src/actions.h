@@ -32,6 +32,12 @@ int8_t key_index(uint8_t code);
 
 bool add_mod(uint8_t code);
 bool del_mod(uint8_t code);
+
+bool add_consumer(uint16_t code);
+bool clear_consumer();
+
 bool action_key_event(key_info_t *key_ev);
 void action_report_init(void);
-bool action_report_send(void);
+
+void send_key_report_event_handle(void *p_event_data, uint16_t event_size);
+void send_consumer_report_event_handle(void *p_event_data, uint16_t event_size);

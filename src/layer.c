@@ -95,5 +95,4 @@ void layer_process_timeout_handler(void * p_context){
     layer_read();
     layer_diff();
     memcpy(layer_prev, layer_current, sizeof(layer_prev));
-    action_report_send();
 }
