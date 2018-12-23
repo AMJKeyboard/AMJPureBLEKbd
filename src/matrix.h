@@ -18,17 +18,6 @@
 
 #pragma once
 
-#define ROW_PIN_0 4
-#define ROW_PIN_1 5
-#define ROW_PIN_2 6
-#define ROW_PIN_3 7
-
-#define COL_IC_DIN_PIN_0 10
-#define COL_IC_DIN_PIN_1 9
-#define COL_IC_CP_PIN 13
-#define COL_IC_CE_PIN 12
-#define COL_IC_PL_PIN 11
-
 void matrix_init(void);
 
 void matrix_select_row(uint8_t row);

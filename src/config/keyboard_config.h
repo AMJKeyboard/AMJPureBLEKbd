@@ -26,6 +26,18 @@
 #define MATRIX_ROWS 4
 #define MATRIX_COLS 12
 
+#define GPIO_ROW_PIN_0 4
+#define GPIO_ROW_PIN_1 5
+#define GPIO_ROW_PIN_2 6
+#define GPIO_ROW_PIN_3 7
+#define GPIO_ROW_PIN_3 7
+
+#define GPIO_COL_IC_DIN_PIN_0 10
+#define GPIO_COL_IC_DIN_PIN_1 9
+#define GPIO_COL_IC_CP_PIN 13
+#define GPIO_COL_IC_CE_PIN 12
+#define GPIO_COL_IC_PL_PIN 11
+
 #define GPIO_DEBUG_OUTPUT_PIN_NUMBER 2
 
 #define GPIO_LED_OUTPUT_PIN_NUMBER 3
