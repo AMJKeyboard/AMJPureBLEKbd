@@ -38,6 +38,8 @@ SET(LINK_SCRIPT ${CMAKE_SOURCE_DIR}/src/script/s130_nrf51822_xxaa.ld)
 #SET(LINK_SCRIPT ${SDK_ROOT}/components/softdevice/s130/toolchain/armgcc/armgcc_s130_nrf51822_xxaa.ld)
 SET(LINK_COMMON_SCRIPT ${SDK_ROOT}/components/toolchain/gcc)
 
+SET(KEYBOARD "ble40" CACHE STRING "Keyboard class.")
+
 INCLUDE_DIRECTORIES(
     ${SDK_ROOT}/components
     ${SDK_ROOT}/components/ble/ble_advertising
@@ -133,6 +135,7 @@ INCLUDE_DIRECTORIES(
     ${SDK_ROOT}/components/toolchain/cmsis/include
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/config
+    ${CMAKE_SOURCE_DIR}/src/keyboards/${KEYBOARD}/
 )
 
 SET(SRC_DEVICE
@@ -240,7 +243,6 @@ ADD_DEFINITIONS(-D${FAMILY} -D${DEVICE} -D${SOFTDEVICE} -D__STACK_SIZE=2048 -D__
 SET(CMAKE_EXE_LINKER_FLAGS "--specs=nano.specs -lc -lnosys -static -Wl,-Map=${MAP_SCRIPT} -Wl,--gc-section  -L${LINK_COMMON_SCRIPT} -T${LINK_SCRIPT}")
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
-CMAKE_POLICY(SET CMP0015 OLD)
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
