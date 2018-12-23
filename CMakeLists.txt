@@ -234,7 +234,7 @@ SET(CMAKE_C_FLAGS_DEBUG " -DDEBUG -O0 -g3 -ggdb")
 SET(CMAKE_VERBOSE_MAKEFILE OFF)
 
 SET_PROPERTY(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${MAP_SCRIPT} ${MERGE_HEX})
-SET(MCU_FLAGS "-mcpu=cortex-m0 -march=armv6-m -mthumb -mabi=aapcs -mfloat-abi=soft ")
+SET(MCU_FLAGS "-mcpu=cortex-m0 -mthumb -mabi=aapcs -mfloat-abi=soft ")
 SET(CMAKE_C_FLAGS "${MCU_FLAGS} -Wall --std=c99 -MP -MD --short-enums -fno-builtin -fno-strict-aliasing -ffunction-sections -fdata-sections")
 ADD_DEFINITIONS(-D${FAMILY} -D${DEVICE} -D${SOFTDEVICE} -D__STACK_SIZE=2048 -D__HEAP_SIZE=1024 -DSOFTDEVICE_PRESENT -DBLE_STACK_SUPPORT_REQD -DSWI_DISABLE0 -DNRF_SD_BLE_API_VERSION=2)
 SET(CMAKE_EXE_LINKER_FLAGS "--specs=nano.specs -lc -lnosys -static -Wl,-Map=${MAP_SCRIPT} -Wl,--gc-section  -L${LINK_COMMON_SCRIPT} -T${LINK_SCRIPT}")
